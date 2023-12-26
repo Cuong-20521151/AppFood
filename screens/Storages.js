@@ -77,7 +77,7 @@ const Storages = ({ navigation }) => {
     const getapithucdon = async () => {
         try {
             const response = await axios.get(
-                'http://192.168.88.128:3000/api/getUserDish/'+ userId);
+                'http://192.168.165.46:3000/api/getUserDish/'+ userId);
             getdstd(response.data);
         } catch (error) {
             // handle err
@@ -142,7 +142,7 @@ const Storages = ({ navigation }) => {
 
 
     const handleDelete = async (id) => {
-        const data = await axios.delete('http://192.168.88.128:3000/api/delete/' + id)
+        const data = await axios.delete('http://192.168.165.46:3000/api/delete/' + id)
         if (data.data.success) {
             getapithucdon();
             alert(data.data.message)

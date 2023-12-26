@@ -1,96 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Button } from 'react-native';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
-const UserProfile = ({ navigation,route }) => {
-  const { id, firstname:initialfirstname, lastname:initiallastname, address:initialaddress, 
-    email: initialemail, phone:initialphone} = route.params; 
-  const [user, setUser] = useState({
-    name_id: '',
-    email: '',
-    username: '',
-    password: '',
+const UserDetails = ({ navigation, route }) => {
+  const { Users } = route.params;
+  const [editedUser, setEditedUser] = useState({
     name: {
-      firstname: '',
-      lastname: ''
+      firstname: Users.name.firstname,
+      lastname: Users.name.lastname,
     },
-    address: '',
-    phone: 0
+    address: Users.address,
+    email: Users.email,
+    phone: Users.phone.toString(),
+    // Add other fields if necessary
   });
 
-  const updateData = async () => {
+  const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://192.168.88.128:3000/api/updateUser/`+route.params.id, {
-        method: 'PATCH',
+      const response = await fetch(`http://192.168.165.46:3000/api/updateUser/${Users._id}`, {
+        method: 'PATCH', // or 'PATCH' depending on your API
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          foodName: foodName,
-          foodPhoto: foodPhoto,
-          foodProcessing: foodProcessing,
-          foodIngredients: foodIngredients,
-          cookingTime: cookingTime,
-          feel: feel,
-          foodRations: foodRations,
-        }),
+        body: JSON.stringify(
+          {
+            name: {
+              firstname: editedUser.name.firstname,
+              lastname: editedUser.name.lastname,
+            },
+            address: editedUser.address,
+            email: editedUser.email,
+            phone: editedUser.phone.toString(),
+          }
+        ),
       });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+
+      if (response.ok) {
+        // Handle successful update
+        console.log('User information updated successfully');
+      } else {
+        // Log additional information about the response for debugging
+        console.error('Failed to update user information:', response.status, response.statusText);
       }
-  
-      const data = await response.json();
-      console.log('Server Response:', data);
-      navigation.navigate("Storages");
     } catch (error) {
-      console.error('Error updating data:', error.message);
+      console.error('Error updating user information:', error);
     }
-  };
-
-  const handleInputChange = (name, value) => {
-    setUser({ ...user, [name]: value });
-  };
-
-  const handleSubmit = () => {
-    // Gửi dữ liệu thông tin người dùng đã chỉnh sửa lên server
-    axios.put('http://your-api-url/user/update', user) // Thay đổi URL API tương ứng
-      .then(response => {
-        console.log('User information updated:', response.data);
-      })
-      .catch(error => {
-        console.error('Error updating user information:', error);
-      });
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.label}>Firstname:</Text>
       <TextInput
         style={styles.input}
-        placeholder="First Name"
-        value={user.name.firstname}
-        onChangeText={value => handleInputChange('name', { ...user.name, firstname: value })}
+        value={editedUser.name.firstname}
+        onChangeText={(text) => setEditedUser({ ...editedUser, name: { ...editedUser.name, firstname: text } })}
       />
+      <Text style={styles.label}>Lastname:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Last Name"
-        value={user.name.lastname}
-        onChangeText={value => handleInputChange('name', { ...user.name, lastname: value })}
+        value={editedUser.name.lastname}
+        onChangeText={(text) => setEditedUser({ ...editedUser, name: { ...editedUser.name, lastname: text } })}
       />
+      <Text style={styles.label}>Address:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        value={user.username}
-        onChangeText={value => handleInputChange('username', value)}
+        value={editedUser.address}
+        onChangeText={(text) => setEditedUser({ ...editedUser, address: text })}
       />
+
+      <Text style={styles.label}>Email:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={user.email}
-        onChangeText={value => handleInputChange('email', value)}
+        value={editedUser.email}
+        onChangeText={(text) => setEditedUser({ ...editedUser, email: text })}
       />
-      {/* Add other fields like address, phone, etc. */}
-      <Button title="Update" onPress={handleSubmit} />
+
+      <Text style={styles.label}>Phone:</Text>
+      <TextInput
+        style={styles.input}
+        value={editedUser.phone}
+        onChangeText={(text) => setEditedUser({ ...editedUser, phone: text })}
+      />
+
+      {/* Add other input fields as needed for other user details */}
+
+      <Button title="Cập nhật" onPress={handleUpdate} />
     </View>
   );
 };
@@ -98,17 +91,21 @@ const UserProfile = ({ navigation,route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    marginTop:10
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 5,
   },
   input: {
+    width: '100%',
     height: 40,
-    width: '80%',
-    margin: 12,
+    borderColor: 'gray',
     borderWidth: 1,
-    padding: 10,
+    marginBottom: 10,
+    paddingHorizontal: 10,
   },
 });
 
-export default UserProfile;
+export default UserDetails;
