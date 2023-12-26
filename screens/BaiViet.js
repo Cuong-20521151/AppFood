@@ -2,18 +2,19 @@ import React, { useState,useEffect } from 'react';
 import { Text, TextInput, View, ImageBackground, Image, Button, ScrollView ,TouchableOpacity, SafeAreaView, StyleSheet,FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 const send = 'send';
 
 const BaiViet=({navigation,route}) =>{
 
+  const { id, name:initialfoodName, Photo:initialfoodPhoto, Processing:initialfoodProcessing, 
+    Ingredients: initialfoodIngredients, Time:initialcookingTime, Feel:initialfeel, FoodRations:initialfoodRations,
+    UserId:initialuserId } = route.params;
+
   const [dscmt, getdscmt] = useState([])
   const [inputHeight, setInputHeight] = useState(80); 
   const [cmt, setCmt] = useState("")
-  const [food_id, setFood_id] = useState('')
-
-  const { id, name:initialfoodName, Photo:initialfoodPhoto, Processing:initialfoodProcessing, 
-    Ingredients: initialfoodIngredients, Time:initialcookingTime, Feel:initialfeel, FoodRations:initialfoodRations } = route.params; 
-
+  const [food_id, setFood_id] = useState('') 
   const [foodName, setFoodName] = useState(initialfoodName)
   const [foodPhoto, setFoodPhoto] = useState(initialfoodPhoto)
   const [foodProcessing, setFoodProcessing] = useState(initialfoodProcessing)
@@ -21,30 +22,40 @@ const BaiViet=({navigation,route}) =>{
   const [cookingTime, setCookingTime] = useState(initialcookingTime)
   const [feel, setFeel] = useState(initialfeel)
   const [foodRations, setFoodRations] = useState(initialfoodRations)
-
+  const [dsuser, getuser] = useState([]);
+  const [userName, setUserName] = useState('');
+  const {userId} = useAuth()
   const _submitCmt = () => {
-    fetch("http://192.168.165.46:3000/api/postCmt", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        cmt: cmt,
-        food_id: route.params.id,
-      })
-    }).then(res => res.json())
-      .then(data => {
-        console.log(data)
-      }).catch(err => {
-        console.log("error", err)
-      })
+    if (userId[0]) {
+      // UserId đã được xác thực, thực hiện gửi comment
+      fetch("http://192.168.88.128:3000/api/postCmt", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          cmt: cmt,
+          food_id: route.params.id,
+          userId: userId,
+        })
+      }).then(res => res.json())
+        .then(data => {
+          console.log(data);
+        }).catch(err => {
+          console.log("error", err);
+        });
+        navigation.navigate('BaiViet');
+    }else{
+      // UserId chưa được xác thực, điều hướng đến màn hình đăng nhập
+      navigation.navigate('LoSign');
+    }
   }
 
 
   const getdscomment = async () => {
     try {
         const response = await axios.get(
-            'http://192.168.165.46:3000/api/getAllCmt');
+            'http://192.168.88.128:3000/api/getAllCmt');
             const filteredComments = response.data.filter(comment => comment.food_id === route.params.id);
             getdscmt(filteredComments);
     } catch (error) {
@@ -70,6 +81,26 @@ useEffect(() => {
     // Thiết lập độ cao của TextInput dựa trên chiều cao nội dung mới
     setInputHeight(contentHeight);
   };
+
+  const getdsuser = async () => {
+    try {
+        const response = await axios.get(
+            'http://192.168.88.128:3000/api/getUser');
+            getuser(response.data);
+    } catch (error) {
+        // handle err
+        // alert(error.message);
+    }
+};
+useEffect(() => {
+  getdsuser();
+}, []);
+
+useEffect(() => {
+  const user = dsuser.find(item => item._id === initialuserId);
+  setUserName(user ? user.name : '');
+}, [dsuser, initialuserId]);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
@@ -80,7 +111,7 @@ useEffect(() => {
                 <View style={styles.headerPost}>
                     <View style={styles.postHead}>  
                     <Image style={styles.image} source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU'}}/>
-                    <Text style={styles.text}>Meo</Text>
+                    <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
                     </View>
                 </View>
               </View>

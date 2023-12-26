@@ -20,7 +20,7 @@ const UserProfile = ({ navigation,route }) => {
 
   const updateData = async () => {
     try {
-      const response = await fetch(`http://192.168.165.46:3000/api/updateUser/`+route.params.id, {
+      const response = await fetch(`http://192.168.88.128:3000/api/updateUser/`+route.params.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
