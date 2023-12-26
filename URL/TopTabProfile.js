@@ -1,10 +1,11 @@
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity,Image,Modal } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import SaveBV from '../screens/SaveBV';
 import LikeBV from '../screens/LikeBV';
 import Icon from 'react-native-vector-icons/Ionicons'
+import UserDetails from '../screens/ProfileDetails';
 import { useAuth } from '../screens/AuthContext';
 import Profile from '../screens/Profile';
 
@@ -12,9 +13,9 @@ const TopTab = createMaterialTopTabNavigator();
 
 
 const CustomTabBar = ({ state, descriptors, navigation }) => {
-  const {setIsAuthenticated} = useAuth();
+  const {userId, setIsAuthenticated} = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-
+  const [User, setUser] = useState([]);
   const handleMenuToggle = () => {
     setIsMenuVisible(!isMenuVisible);
   };
@@ -22,7 +23,29 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   const handleLogout = () => {
     setIsAuthenticated(false);
   };
+  const getUser = async () => {
+    try {
+      const res = await fetch('http://192.168.165.46:3000/api/getUser');
+      const json = await res.json();
   
+      // Kiểm tra và gán dữ liệu người dùng vào User nếu nó là một mảng
+      if (Array.isArray(json)) {
+        const extractedProducts = json.find(item => item._id === userId);
+        console.log(extractedProducts);
+        setUser([extractedProducts]); // Gán dữ liệu vào User
+      } else {
+        console.error('Lỗi: Dữ liệu không phải là một mảng');
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+    }
+  };
+  useEffect(()=>{
+    getUser();
+  },[userId]);
+  const UserDetails = (selectedUser) => {
+    navigation.navigate('Cập nhật thông tin', { Users: selectedUser});
+};
   return (
     <View style={styles.tabBar}>
       <View style={styles.Head}>
@@ -43,8 +66,24 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       {/* Modal hiển thị thông tin người dùng và tùy chọn đăng xuất */}
       {isMenuVisible && (
         <View style={styles.menu}>
+          {
+            Array.isArray(User) ? (
+              User.map((item) => (
+                <TouchableOpacity
+                  key={item._id}
+                  onPress={() =>
+                    UserDetails(item)
+                  }
+                >
+                  <Text>Thông tin người dùng: {item.name.firstname}</Text>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text>Không có dữ liệu người dùng</Text>
+            )
+          
+          }
           <TouchableOpacity onPress={handleLogout}>
-            <Text>Thông tin người dùng</Text>
             <Text style={styles.menuItem}>Đăng Xuất</Text>
           </TouchableOpacity>
           {/* Thêm các tùy chọn khác ở đây nếu cần */}

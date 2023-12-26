@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import LoSign from '../URL/LoSign';
 import Login from './login';
 import TopTabProfile from '../URL/TopTabProfile';
+import UserDetails from './ProfileDetails';
 
 function Pro(){
   const St = createStackNavigator ();
@@ -22,7 +23,24 @@ function Pro(){
       <St.Screen name="ProAuthStackSrc" component={ProAuthStack} options={{ headerShown: false }} />    
     </St.Navigator> 
   )
-}
+};
+function TopTab(){
+  const St = createStackNavigator ();
+  return(
+    <St.Navigator initialRouteName="TopTabProfile" 
+      screenOptions={{
+        headerStyle: {
+          height: 100, // Margin top cho header
+          
+        },
+        headerShown: true,
+      }}
+    >
+      <St.Screen name="Cập nhật thông tin" component={UserDetails} options={{ headerShown: true}} />
+      <St.Screen name="TopTabProfile" component={TopTabProfile} options={{ headerShown: false }} />    
+    </St.Navigator> 
+  )
+};
 const Main = () => {
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();
@@ -85,7 +103,7 @@ const Main = () => {
         component={isAuthenticated ? AuthStack : LoSign} // Không render gì cả nếu chưa xác thực
         options={{ header: () => null }}
       />
-      <Tab.Screen name="ProfileScreen" component={isAuthenticated ? TopTabProfile : Pro} options={{ header: () => null }} />
+      <Tab.Screen name="ProfileScreen" component={isAuthenticated ? TopTab : Pro} options={{ header: () => null }} />
       
     </Tab.Navigator>
   );

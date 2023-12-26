@@ -10,7 +10,7 @@ const SearchProcessing = ({ navigation,route }) => {
 
   const getapithucdon = async () => {
     try {
-      const response = await axios.get('http://192.168.88.128:3000/api/getAllDish');
+      const response = await axios.get('http://192.168.165.46:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
     }
