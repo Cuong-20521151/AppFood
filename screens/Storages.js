@@ -3,6 +3,7 @@ import {
     Text, View, Button, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Alert,
     RefreshControl, ActivityIndicator
 } from 'react-native';
+import { useAuth } from './AuthContext';
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
@@ -71,11 +72,12 @@ const Storages = ({ navigation }) => {
     const [totalDishes, setTotalDishes] = useState(0);
     const [mealTypeCounts, setMealTypeCounts] = useState({});
     const [foodProcessingTypeCounts, setFoodProcessingTypeCounts] = useState({});
-
+    const {userId} = useAuth()
+    // console.log(userId)
     const getapithucdon = async () => {
         try {
             const response = await axios.get(
-                'http://192.168.165.46:3000/api/getAllDish');
+                'http://192.168.88.128:3000/api/getUserDish/'+ userId);
             getdstd(response.data);
         } catch (error) {
             // handle err
@@ -140,7 +142,7 @@ const Storages = ({ navigation }) => {
 
 
     const handleDelete = async (id) => {
-        const data = await axios.delete('http://192.168.165.46:3000/api/delete/' + id)
+        const data = await axios.delete('http://192.168.88.128:3000/api/delete/' + id)
         if (data.data.success) {
             getapithucdon();
             alert(data.data.message)
@@ -177,6 +179,9 @@ const Storages = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
+            <TouchableOpacity onPress={()=>navigation.navigate("LoginScreen")}>
+                    <Text style={styles.text_login_account}>Đăng nhập tài khoản</Text>
+                </TouchableOpacity>
             <View>
                 <Text style={styles.text_item}>Món ăn của tôi </Text>
                 <Text style={styles.text_item}>Tổng số món ăn: {totalDishes}</Text>

@@ -17,11 +17,13 @@ const HomeScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false)
   const [uniqueMealTypes, setUniqueMealTypes] = useState([]);
   const [uniqueFoodProcessingTypes, setUniqueFoodProcessingTypes] = useState([]);
+  const [dsuser, getuser] = useState([]);
+  const [combinedData, setCombinedData] = useState([]);
 
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.165.46:3000/api/getAllDish');
+        'http://192.168.88.128:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -53,6 +55,34 @@ const HomeScreen = ({ navigation }) => {
     setRefreshing(true);
     getapithucdon();
   }
+
+  const getdsuser = async () => {
+    try {
+      const response = await axios.get(
+        'http://192.168.88.128:3000/api/getUser');
+      getuser(response.data);
+    } catch (error) {
+      // handle err
+      // alert(error.message);
+    }
+  };
+  useEffect(() => {
+    getdsuser();
+  }, []);
+
+  const combineData = () => {
+    // Kết hợp dữ liệu từ dsuser và dsthucdon khi userId trùng nhau
+    const combinedData = dsthucdon.map(post => {
+      const user = dsuser.find(user => user._id === post.userId);
+      return { ...post, user };
+    });
+
+    setCombinedData(combinedData);
+  };
+
+  useEffect(() => {
+    combineData();
+  }, [dsuser, dsthucdon]);
 
 
 
@@ -148,7 +178,6 @@ const HomeScreen = ({ navigation }) => {
       }
     >
       <View style={styles.content}>
-
         <View style={styles.container}>
           <View >
             <Text style={styles.textHeadList}>Trong tủ lạnh của bạn có gì?</Text>
@@ -158,7 +187,7 @@ const HomeScreen = ({ navigation }) => {
               data={uniqueMealTypes}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemList}>
+                <TouchableOpacity style={styles.itemList} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
                   <Icon style={styles.icon} name={iconCheck} color={'#000'} size={15} />
                   <Text style={styles.textList}>{item}</Text>
 
@@ -174,7 +203,7 @@ const HomeScreen = ({ navigation }) => {
               data={uniqueFoodProcessingTypes}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemListCB}>
+                <TouchableOpacity style={styles.itemListCB} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
                   <Text style={styles.textList}>{item}</Text>
 
                 </TouchableOpacity >
@@ -186,7 +215,7 @@ const HomeScreen = ({ navigation }) => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} >
 
             {
-              dsthucdon.map(Post => (
+              combinedData.map(Post => (
                 <TouchableOpacity style={styles.post} key={Post.id} onPress={() => navigation.navigate('BaiViet',
                   {
                     id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
@@ -197,7 +226,9 @@ const HomeScreen = ({ navigation }) => {
                     <ImageBackground source={{ uri: Post.foodPhoto }} style={styles.postImage} imageStyle={{ borderTopLeftRadius: 15, borderTopRightRadius: 15, }}>
                       <View style={styles.postHead}>
                         <Image source={{ uri: Post.profileImage }} style={styles.projectImage}></Image>
-                        <Text style={styles.text}>{Post.userName}</Text>
+                        <Text style={styles.text}>{Post.user && Post.user.name
+                          ? `${Post.user.name.lastname} ${Post.user.name.firstname}`
+                          : 'Unknown User'}</Text>
                       </View>
                       <Text style={styles.postText}>{Post.foodName}</Text>
                     </ImageBackground>
@@ -274,7 +305,7 @@ const HomeScreen = ({ navigation }) => {
               renderItem={({ item }) => (
                 <TouchableOpacity style={styles.itemListDiscover} >
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
-                    <Text style={styles.textListThem}>{item.type}</Text>
+                    <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
 
                   <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
@@ -297,13 +328,14 @@ const HomeScreen = ({ navigation }) => {
 
         <FlatList
           scrollEnabled={false}
-          data={dsthucdon}
+          data={combinedData}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('BaiViet',
               {
                 id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
-                Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
+                Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
+                UserId: item.userId
               })}>
 
               <View style={styles.headerPostNew}>
@@ -311,7 +343,9 @@ const HomeScreen = ({ navigation }) => {
                 </Image>
                 <View style={styles.postHeadNew}>
                   <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNjuAlP67tv7QzTpcc--fy9UnBSM3JszDFCw&usqp=CAU' }} style={styles.projectImage}></Image>
-                  <Text style={styles.textNew}>{item.foodName}</Text>
+                  <Text style={styles.textNew}>{item.user && item.user.name
+                    ? `${item.user.name.lastname} ${item.user.name.firstname}`
+                    : 'Unknown User'}</Text>
                 </View>
                 <Text style={styles.postTextNew}>{item.foodName}</Text>
 
@@ -338,7 +372,6 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
 
           )}
-          keyExtractor={(item) => item.id}
 
           numColumns={2}
         />
@@ -481,7 +514,7 @@ const styles = StyleSheet.create({
     borderRadius: 50
   },
   textListThem: {
-    fontSize: 12,
+    fontSize: 13,
     marginTop: 70,
     padding: 10,
     color: 'white',
