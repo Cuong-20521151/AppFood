@@ -1,17 +1,25 @@
 import React from 'react'
 import { Text, View, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useAuth } from './AuthContext';
 
 
 const Profile = ({navigation}) => {
-    
+    const {isAuthenticated} = useAuth();
     return (
         <View style={styles.container}>
-            <View style={styles.login_account}>
-                <Image source={{ uri: 'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg' }} style={styles.logo} />
-                <TouchableOpacity onPress={()=>navigation.navigate("LoginScreen")}>
-                    <Text style={styles.text_login_account}>Đăng nhập tài khoản</Text>
-                </TouchableOpacity>
-            </View>
+            {
+                isAuthenticated ? (
+                    <Text style={styles.NoText}></Text>
+                    
+                ) : (
+                    <View style={styles.login_account}>
+                        <Image source={{ uri: 'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg' }} style={styles.logo} />
+                        <TouchableOpacity onPress={()=>navigation.navigate("LoginScreen")}>
+                            <Text style={styles.text_login_account}>Đăng nhập tài khoản</Text>
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
             <View style={styles.text_info}>
                 <TouchableOpacity style={styles.row}>
                     <Text style={styles.text}>Quốc gia</Text>
@@ -88,5 +96,10 @@ const styles = StyleSheet.create({
         marginLeft:30,
         marginTop:15,
     },
+    NoText:{
+        height:0,
+        margin:-50,
+        
+    }
 })
 export default Profile

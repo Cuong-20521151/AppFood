@@ -37,7 +37,8 @@ function TopTab(){
       }}
     >
       <St.Screen name="Cập nhật thông tin" component={UserDetails} options={{ headerShown: true}} />
-      <St.Screen name="TopTabProfile" component={TopTabProfile} options={{ headerShown: false }} />    
+      <St.Screen name="TopTabProfile" component={TopTabProfile} options={{ headerShown: false }} />  
+      <St.Screen name="Cài đặt" component={ProAuthStack} options={{ headerShown: true }} />    
     </St.Navigator> 
   )
 };

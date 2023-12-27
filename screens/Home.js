@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import FlatSL from '../components/FlastSL';
 const iconName = 'bookmark-outline';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 const iconUnCheck = 'checkmark-circle-outline';
 const iconCheck = 'checkmark-circle';
 
@@ -13,8 +14,9 @@ const HomeScreen = ({ navigation }) => {
   // const [count, setCount] = useState(false);
   // const [posts, setPosts] = useState([]);
   // const [searchQuery, setSearchQuery] = useState('');
-  const [dsthucdon, getdstd] = useState([])
-  const [refreshing, setRefreshing] = useState(false)
+  const {userId,isAuthenticated} = useAuth();
+  const [dsthucdon, getdstd] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [uniqueMealTypes, setUniqueMealTypes] = useState([]);
   const [uniqueFoodProcessingTypes, setUniqueFoodProcessingTypes] = useState([]);
   const [dsuser, getuser] = useState([]);
@@ -23,7 +25,7 @@ const HomeScreen = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.165.46:3000/api/getAllDish');
+        'http://192.168.146.46:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -59,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.165.46:3000/api/getUser');
+        'http://192.168.146.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -83,8 +85,26 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     combineData();
   }, [dsuser, dsthucdon]);
-
-
+  const handleSaveDish = async (postId) => {
+    if (isAuthenticated) {
+      try {
+        const response = await axios.post('http://192.168.146.46:3000/api/postSaveDish', {
+          food_id: postId,
+          userId: userId,
+        });
+        console.log('Trạng thái lưu:', response.data);
+        // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
+        // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+      } catch (error) {
+        console.error('Lỗi khi lưu bài viết:', error.message);
+        // Xử lý thông báo lỗi nếu cần
+      }
+    } else {
+      // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
+      navigation.navigate('LoSign');
+      // Hiển thị thông báo yêu cầu đăng nhập nếu cần
+    }
+  };
 
   // const handleOnClicklove = (postId) => {
   //   const updatePosts = posts.map(Post => {
@@ -186,14 +206,14 @@ const HomeScreen = ({ navigation }) => {
               horizontal={true}
               data={uniqueMealTypes}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemList} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
+              renderItem={({ item, index }) => (
+                <TouchableOpacity key={`mealType_${index}`} style={styles.itemList} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
                   <Icon style={styles.icon} name={iconCheck} color={'#000'} size={15} />
                   <Text style={styles.textList}>{item}</Text>
 
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => `mealType_${index}`}
 
             />
           </View>
@@ -202,21 +222,21 @@ const HomeScreen = ({ navigation }) => {
               horizontal={true}
               data={uniqueFoodProcessingTypes}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemListCB} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
+              renderItem={({ item, index }) => (
+                <TouchableOpacity key={`mealType_${index}`} style={styles.itemListCB} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
                   <Text style={styles.textList}>{item}</Text>
 
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => `mealType_${index}`}
 
             />
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} >
 
             {
-              combinedData.map(Post => (
-                <TouchableOpacity style={styles.post} key={Post.id} onPress={() => navigation.navigate('BaiViet',
+              combinedData.map((Post,index) => (
+                <TouchableOpacity style={styles.post} key={`mealType_${index}`} onPress={() => navigation.navigate('BaiViet',
                   {
                     id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
                     Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
@@ -249,7 +269,7 @@ const HomeScreen = ({ navigation }) => {
                         </TouchableOpacity>
                       </View>
                       <View style={styles.buttonContent}>
-                        <TouchableOpacity style={styles.button}>
+                        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
                           <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
                           <Text style={styles.textButton}>Lưu</Text>
                         </TouchableOpacity>
@@ -302,8 +322,8 @@ const HomeScreen = ({ navigation }) => {
               data={dsthucdon}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemListDiscover} >
+              renderItem={({ item, index }) => (
+                <TouchableOpacity key={`mealType_${index}`} style={styles.itemListDiscover} >
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
@@ -311,7 +331,7 @@ const HomeScreen = ({ navigation }) => {
                   <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => `mealType_${index}`}
             />
 
           </View>
@@ -330,8 +350,8 @@ const HomeScreen = ({ navigation }) => {
           scrollEnabled={false}
           data={combinedData}
           showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('BaiViet',
+          renderItem={({ item, index }) => (
+            <TouchableOpacity key={`mealType_${index}`} style={styles.postNew} onPress={() => navigation.navigate('BaiViet',
               {
                 id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
                 Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,

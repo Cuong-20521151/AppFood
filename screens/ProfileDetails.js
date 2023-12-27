@@ -16,7 +16,7 @@ const UserDetails = ({ navigation, route }) => {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://192.168.165.46:3000/api/updateUser/${Users._id}`, {
+      const response = await fetch(`http://192.168.146.46:3000/api/updateUser/${Users._id}`, {
         method: 'PATCH', // or 'PATCH' depending on your API
         headers: {
           'Content-Type': 'application/json',
@@ -48,6 +48,14 @@ const UserDetails = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      {/* <TouchableOpacity style={styles.upload_image} mode="contained"
+          onPress={() => _uploadImage()}>
+          <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
+          <Text>Chọn ảnh</Text>
+          {foodPhoto !== "" && (
+          <Image source={{ uri: foodPhoto }} style={styles.image} />
+          )}
+        </TouchableOpacity> */}
       <Text style={styles.label}>Firstname:</Text>
       <TextInput
         style={styles.input}
