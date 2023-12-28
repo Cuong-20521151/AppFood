@@ -139,14 +139,14 @@ const HomeScreen = ({ navigation }) => {
               horizontal={true}
               data={uniqueMealTypes}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemList} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
+              renderItem={({ item, index }) => (
+                <TouchableOpacity style={styles.itemList} key={`item_${index}`} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
                   <Icon style={styles.icon} name={iconCheck} color={'#000'} size={15} />
                   <Text style={styles.textList}>{item}</Text>
 
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => index.toString()}
 
             />
           </View>
@@ -155,21 +155,21 @@ const HomeScreen = ({ navigation }) => {
               horizontal={true}
               data={uniqueFoodProcessingTypes}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemListCB} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
+              renderItem={({ item, index }) => (
+                <TouchableOpacity style={styles.itemListCB} key={`item_${index}`} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
                   <Text style={styles.textList}>{item}</Text>
 
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => index.toString()}
 
             />
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} >
 
             {
-              combinedData.map(Post => (
-                <TouchableOpacity style={styles.post} key={Post.id} onPress={() => navigation.navigate('Bài Viết',
+              combinedData.map((Post, index) => (
+                <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
                     Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
@@ -248,8 +248,8 @@ const HomeScreen = ({ navigation }) => {
               data={dsthucdon}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemListDiscover} >
+              renderItem={({ item, index }) => (
+                <TouchableOpacity style={styles.itemListDiscover} key={`item_${index}`}>
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
@@ -257,7 +257,7 @@ const HomeScreen = ({ navigation }) => {
                   <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => index.toString()}
             />
 
           </View>
@@ -276,8 +276,9 @@ const HomeScreen = ({ navigation }) => {
           scrollEnabled={false}
           data={combinedData}
           showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
               {
                 id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
                 Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
