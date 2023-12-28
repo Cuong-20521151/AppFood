@@ -16,7 +16,7 @@ const UserDetails = ({ navigation, route }) => {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://192.168.88.128:3000/api/updateUser/${Users._id}`, {
+      const response = await fetch(`http://192.168.100.6:3000/api/updateUser/${Users._id}`, {
         method: 'PATCH', // or 'PATCH' depending on your API
         headers: {
           'Content-Type': 'application/json',
