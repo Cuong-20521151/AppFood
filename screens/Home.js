@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ImageBackground, Button, FlatList, TextInput, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FlatSL from '../components/FlastSL';
+import { AirbnbRating } from 'react-native-ratings';
 const iconName = 'bookmark-outline';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
@@ -10,24 +11,20 @@ const iconUnCheck = 'checkmark-circle-outline';
 const iconCheck = 'checkmark-circle';
 
 const HomeScreen = ({ navigation }) => {
-  // const [selectedId, setSelectedId] = useState([]);
-  // const [count, setCount] = useState(false);
-  // const [posts, setPosts] = useState([]);
-  // const [searchQuery, setSearchQuery] = useState('');
-  const {userId,isAuthenticated,refreshData,
-    setRefreshData} = useAuth();
+  const { userId, isAuthenticated, refreshData,
+    setRefreshData } = useAuth();
   const [dsthucdon, getdstd] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [uniqueMealTypes, setUniqueMealTypes] = useState([]);
   const [uniqueFoodProcessingTypes, setUniqueFoodProcessingTypes] = useState([]);
   const [dsuser, getuser] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
-  
+
 
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.146.46:3000/api/getAllDish');
+        'http://192.168.88.128:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -63,7 +60,7 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.146.46:3000/api/getUser');
+        'http://192.168.88.128:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -91,17 +88,17 @@ const HomeScreen = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.146.46:3000/api/postSaveDish', {
-            food_id: postId,
-            userId: userId,
+        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
+          food_id: postId,
+          userId: userId,
         });
         console.log('Trạng thái lưu:', response.data);
         // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
         // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
         setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
       } catch (error) {
-          console.error('Lỗi khi lưu bài viết:', error.message);
-          // Xử lý thông báo lỗi nếu cần
+        console.error('Lỗi khi lưu bài viết:', error.message);
+        // Xử lý thông báo lỗi nếu cần
       }
     } else {
       // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
@@ -111,7 +108,7 @@ const HomeScreen = ({ navigation }) => {
   };
   const handleNavigate = (data) => {
     // Xử lý việc chuyển đến trang khác với dữ liệu `data`
-    navigation.navigate('Bài Viết', { 
+    navigation.navigate('Bài Viết', {
       id: data.id,
       name: data.name,
       Photo: data.Photo,
@@ -123,87 +120,6 @@ const HomeScreen = ({ navigation }) => {
       UserId: data.UserId,
     });
   };
-  // const handleOnClicklove = (postId) => {
-  //   const updatePosts = posts.map(Post => {
-
-  //     if (Post.id === postId && Post.on === false) {
-  //       return {
-  //         ...Post,
-  //         love: Post.love + 1,
-  //         on: true,
-  //       };
-
-  //     }
-  //     if (Post.id === postId && Post.on === true) {
-  //       setCount(!count)
-  //       return {
-  //         ...Post,
-  //         love: Post.love - 1,
-  //         on: false,
-  //       }
-  //     }
-  //     return Post;
-  //   });
-  //   setPosts(updatePosts);
-  // };
-  // const handleOnClickfaceWithSave = (postId) => {
-  //   const updatePosts = posts.map(Post => {
-  //     if (Post.id === postId && Post.on === false) {
-  //       return {
-  //         ...Post,
-  //         faceWithSave: Post.faceWithSave + 1,
-  //         on: true,
-  //       };
-
-  //     }
-  //     if (Post.id === postId && Post.on === true) {
-  //       setCount(!count)
-  //       return {
-  //         ...Post,
-  //         faceWithSave: Post.faceWithSave - 1,
-  //         on: false,
-  //       }
-  //     }
-  //     return Post;
-  //   });
-  //   setPosts(updatePosts);
-  // };
-
-  // const handleOnClickclap = (postId) => {
-  //   const updatePosts = posts.map(Post => {
-  //     if (Post.id === postId && Post.on === false) {
-  //       return {
-  //         ...Post,
-  //         clap: Post.clap + 1,
-  //         on: true,
-  //       };
-
-  //     }
-  //     if (Post.id === postId && Post.on === true) {
-  //       setCount(!count)
-  //       return {
-  //         ...Post,
-  //         clap: Post.clap - 1,
-  //         on: false,
-  //       }
-  //     }
-  //     return Post;
-  //   });F
-  //   setPosts(updatePosts);
-  // };
-
-  // const toggleExerciseSelection = (exercise) => {
-  //   // Kiểm tra nếu exercise đc nhãn đã có trong danh sách gọi thì bỏ 
-  //   // Ngc lại, thêm vào danh sách nếu chưa có      
-  //   setSelectedId((selectedId) => {
-  //     if (selectedId.includes(exercise)) {
-  //       return selectedId.filter((id) => id !== exercise);
-  //     } else {
-  //       return [...selectedId, exercise];
-  //     }
-  //   });
-
-  // };
 
   return (
     <ScrollView style={styles.main}
@@ -223,14 +139,14 @@ const HomeScreen = ({ navigation }) => {
               horizontal={true}
               data={uniqueMealTypes}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity key={`mealType_${index}`} style={styles.itemList} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.itemList} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
                   <Icon style={styles.icon} name={iconCheck} color={'#000'} size={15} />
                   <Text style={styles.textList}>{item}</Text>
 
                 </TouchableOpacity >
               )}
-              keyExtractor={(item, index) => `mealType_${index}`}
+              keyExtractor={(item) => item.id}
 
             />
           </View>
@@ -239,21 +155,21 @@ const HomeScreen = ({ navigation }) => {
               horizontal={true}
               data={uniqueFoodProcessingTypes}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity key={`mealType_${index}`} style={styles.itemListCB} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.itemListCB} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
                   <Text style={styles.textList}>{item}</Text>
 
                 </TouchableOpacity >
               )}
-              keyExtractor={(item, index) => `mealType_${index}`}
+              keyExtractor={(item) => item.id}
 
             />
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} >
 
             {
-              combinedData.map((Post,index) => (
-                <TouchableOpacity style={styles.post} key={`mealType_${index}`} onPress={() => navigation.navigate('Bài Viết',
+              combinedData.map(Post => (
+                <TouchableOpacity style={styles.post} key={Post.id} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
                     Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
@@ -272,26 +188,19 @@ const HomeScreen = ({ navigation }) => {
 
                   </View>
                   <View>
-
                     <View style={styles.interactiveContainer}>
-                      <View style={styles.buttonContent}>
-                        <TouchableOpacity style={styles.button} >
-                          <Text style={styles.textButton} >❤️ {Post.love}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} >
-                          <Text style={styles.textButton}>😋 {Post.faceWithSave}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} >
-                          <Text style={styles.textButton}>👏 {Post.clap}</Text>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.buttonContent}>
-                        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
-                          <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
-                          <Text style={styles.textButton}>Lưu</Text>
-                        </TouchableOpacity>
-                      </View>
-
+                      <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                        <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
+                        <Text style={styles.textButton}>Lưu</Text>
+                      </TouchableOpacity>
+                      <AirbnbRating
+                        count={5}
+                        reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+                        defaultRating={Post.aveRating}
+                        size={14}
+                        showRating={false}
+                        isDisabled
+                      />
                     </View>
                   </View>
 
@@ -320,7 +229,7 @@ const HomeScreen = ({ navigation }) => {
             row={4}
             data={dsthucdon}
             columns={2}
-            toggleExerciseSelection={handleNavigate}
+
           />
 
         </View>
@@ -339,16 +248,16 @@ const HomeScreen = ({ navigation }) => {
               data={dsthucdon}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity key={`mealType_${index}`} style={styles.itemListDiscover} >
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.itemListDiscover} >
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
 
-                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
+                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
                 </TouchableOpacity >
               )}
-              keyExtractor={(item, index) => `mealType_${index}`}
+              keyExtractor={(item) => item.id}
             />
 
           </View>
@@ -367,8 +276,8 @@ const HomeScreen = ({ navigation }) => {
           scrollEnabled={false}
           data={combinedData}
           showsHorizontalScrollIndicator={false}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity key={`mealType_${index}`} style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
               {
                 id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
                 Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
@@ -390,19 +299,18 @@ const HomeScreen = ({ navigation }) => {
 
 
               <View style={styles.interactiveContainer}>
-                <View style={styles.buttonContent}>
-                  <TouchableOpacity style={styles.buttonNew}>
-                    <Text style={styles.textButtonNew} >❤️ {item.love}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.buttonNew}>
-                    <Text style={styles.textButtonNew}>😋 {item.faceWithSave}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.buttonNew}>
-                    <Text style={styles.textButtonNew}>👏 {item.clap}</Text>
-                  </TouchableOpacity>
-                </View>
-
-
+                <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                  <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
+                  <Text style={styles.textButton}>Lưu</Text>
+                </TouchableOpacity>
+                <AirbnbRating
+                  count={5}
+                  reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+                  defaultRating={item.aveRating}
+                  size={14}
+                  showRating={false}
+                  isDisabled
+                />
               </View>
 
 
@@ -427,9 +335,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginTop: 1,
-
-
   },
   content: {
     marginBottom: 10
@@ -474,23 +379,9 @@ const styles = StyleSheet.create({
   interactiveContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-
-  buttonContent: {
-    flexDirection: 'row',
-    height: 36,
-    margin: 5,
-  },
-  button: {
-    flexDirection: 'row',
-    backgroundColor: "lightblue",
-    padding: 5,
-    margin: 5,
-    borderRadius: 10,
-    width: 50,
-  },
-  textButton: {
-    fontSize: 12,
+    paddingLeft: 6,
+    paddingTop: 5,
+    marginRight:24,
   },
 
   itemList: {
@@ -586,21 +477,6 @@ const styles = StyleSheet.create({
     width: 150,
     height: 200,
 
-  },
-
-  buttonNew: {
-    flexDirection: 'row',
-    backgroundColor: "lightblue",
-    padding: 3,
-    marginLeft: 1,
-    marginRight: 2,
-    marginTop: 5,
-    borderRadius: 10,
-    width: 45,
-    height: 20
-  },
-  textButtonNew: {
-    fontSize: 10
   },
   postHeadNew: {
     flexDirection: 'row',

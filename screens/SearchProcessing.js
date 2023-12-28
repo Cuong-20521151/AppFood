@@ -2,24 +2,92 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TextInput, Image, FlatList, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import axios from 'axios';
 import FlatSL from '../components/FlastSL';
+import { AirbnbRating } from 'react-native-ratings';
+import { useAuth } from './AuthContext';
+import Icon from 'react-native-vector-icons/Ionicons';
+const iconName = 'bookmark-outline';
 
-const SearchProcessing = ({ navigation,route }) => {
+
+const SearchProcessing = ({ navigation, route }) => {
   const [dsthucdon, getdstd] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  const {items:foodProcessingTypes } = route.params; 
-
+  const [dsuser, getuser] = useState([]);
+  const [combinedData, setCombinedData] = useState([]);
+  const { items: foodProcessingTypes } = route.params;
   const getapithucdon = async () => {
     try {
-      const response = await axios.get('http://192.168.146.46:3000/api/getAllDish');
+      const response = await axios.get('http://192.168.88.128:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
     }
   };
-  const filteredData = dsthucdon.filter(item => foodProcessingTypes.includes(item.foodProcessingType));
+  const filteredData = combinedData.filter(item => foodProcessingTypes.includes(item.foodProcessingType));
+
+  // Hàm để lấy giá trị foodProcessingType đầu tiên từ filteredData
+  const getFirstFoodProcessingType = (data) => {
+    if (data.length > 0) {
+      return data[0].foodProcessingType;
+    } else {
+      return null; // Trả về null nếu không có dữ liệu
+    }
+  };
+
+  // Sử dụng hàm trong component SearchProcessing
+  const firstFoodProcessingType = getFirstFoodProcessingType(filteredData);
+
   useEffect(() => {
     getapithucdon();
   }, []);
 
+  const getdsuser = async () => {
+    try {
+      const response = await axios.get(
+        'http://192.168.88.128:3000/api/getUser');
+      getuser(response.data);
+    } catch (error) {
+      // handle err
+      // alert(error.message);
+    }
+  };
+  useEffect(() => {
+    getdsuser();
+  }, []);
+
+  const combineData = () => {
+    // Kết hợp dữ liệu từ dsuser và dsthucdon khi userId trùng nhau
+    const combinedData = dsthucdon.map(post => {
+      const user = dsuser.find(user => user._id === post.userId);
+      return { ...post, user };
+    });
+
+    setCombinedData(combinedData);
+  };
+
+  useEffect(() => {
+    combineData();
+  }, [dsuser, dsthucdon]);
+
+  const handleSaveDish = async (postId) => {
+    if (isAuthenticated) {
+      try {
+        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
+          food_id: postId,
+          userId: userId,
+        });
+        console.log('Trạng thái lưu:', response.data);
+        // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
+        // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+        setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
+      } catch (error) {
+        console.error('Lỗi khi lưu bài viết:', error.message);
+        // Xử lý thông báo lỗi nếu cần
+      }
+    } else {
+      // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
+      navigation.navigate('LoSign');
+      // Hiển thị thông báo yêu cầu đăng nhập nếu cần
+    }
+  };
 
   const filterData = (item) => {
     if (searchInput === "") {
@@ -27,7 +95,7 @@ const SearchProcessing = ({ navigation,route }) => {
     }
     if (item.foodName.toLowerCase().includes(searchInput.toLowerCase())) {
       return (
-        <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('BaiViet',
+        <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
           {
             id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
             Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
@@ -38,25 +106,26 @@ const SearchProcessing = ({ navigation,route }) => {
             </Image>
             <View style={styles.postHeadNew}>
               <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNjuAlP67tv7QzTpcc--fy9UnBSM3JszDFCw&usqp=CAU' }} style={styles.projectImage}></Image>
-              <Text style={styles.textNew}>{item.foodName}</Text>
+              <Text style={styles.textNew}>{item.user && item.user.name
+                ? `${item.user.name.lastname} ${item.user.name.firstname}`
+                : 'Unknown User'}</Text>
             </View>
             <Text style={styles.postTextNew}>{item.foodName}</Text>
 
           </View>
           <View style={styles.interactiveContainer}>
-            <View style={styles.buttonContent}>
-              <TouchableOpacity style={styles.buttonNew}>
-                <Text style={styles.textButtonNew} >❤️ {item.love}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonNew}>
-                <Text style={styles.textButtonNew}>😋 {item.faceWithSave}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonNew}>
-                <Text style={styles.textButtonNew}>👏 {item.clap}</Text>
-              </TouchableOpacity>
-            </View>
-
-
+            <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+              <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
+              <Text style={styles.textButton}>Lưu</Text>
+            </TouchableOpacity>
+            <AirbnbRating
+              count={5}
+              reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+              defaultRating={item.aveRating}
+              size={14}
+              showRating={false}
+              isDisabled
+            />
           </View>
 
 
@@ -77,23 +146,21 @@ const SearchProcessing = ({ navigation,route }) => {
       <FlatList
         style={styles.myFood}
         scrollEnabled={false}
-        data={dsthucdon}
+        data={combinedData}
         renderItem={({ item, index }) => filterData(item)}
         keyExtractor={(item) => item.id}
         numColumns={2}
       />
       <View style={styles.content}>
         <View>
-          <Text style={styles.textHeadList}>Món ăn của: </Text>
-
+          <Text style={styles.textHeadList}>Loại chế biến: {firstFoodProcessingType}</Text>
           <View style={styles.row}>
-
             <FlatList
               scrollEnabled={false}
               data={filteredData}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('BaiViet',
+                <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
                     Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
@@ -104,28 +171,26 @@ const SearchProcessing = ({ navigation,route }) => {
                     </Image>
                     <View style={styles.postHeadNew}>
                       <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNjuAlP67tv7QzTpcc--fy9UnBSM3JszDFCw&usqp=CAU' }} style={styles.projectImage}></Image>
-                      <Text style={styles.textNew}>{item.foodName}</Text>
+                      <Text style={styles.textNew}>{item.user && item.user.name
+                        ? `${item.user.name.lastname} ${item.user.name.firstname}`
+                        : 'Unknown User'}</Text>
                     </View>
                     <Text style={styles.postTextNew}>{item.foodName}</Text>
-
                   </View>
-
-
-                  {/* <View style={styles.interactiveContainer}>
-                    <View style={styles.buttonContent}>
-                      <TouchableOpacity style={styles.buttonNew}>
-                        <Text style={styles.textButtonNew} >❤️ {item.love}</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.buttonNew}>
-                        <Text style={styles.textButtonNew}>😋 {item.faceWithSave}</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.buttonNew}>
-                        <Text style={styles.textButtonNew}>👏 {item.clap}</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View> */}
-
-
+                  <View style={styles.interactiveContainer}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                      <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
+                      <Text style={styles.textButton}>Lưu</Text>
+                    </TouchableOpacity>
+                    <AirbnbRating
+                      count={5}
+                      reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+                      defaultRating={item.aveRating}
+                      size={14}
+                      showRating={false}
+                      isDisabled
+                    />
+                  </View>
                 </TouchableOpacity>
 
               )}
@@ -172,7 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   content: {
-    marginLeft:25,
+    marginLeft: 25,
   },
   textHeadList: {
     fontSize: 18,
@@ -206,12 +271,12 @@ const styles = StyleSheet.create({
   },
   postNew: {
     width: 160,
-    height: 220,
+    height: 250,
     borderRadius: 15,
     marginRight: 5,
-    backgroundColor:"#fff",
-    marginBottom:15,
-    marginRight:15,
+    backgroundColor: "#fff",
+    marginBottom: 15,
+    marginRight: 15,
   },
   headerPostNew: {
     width: 250,
@@ -235,15 +300,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     paddingLeft: 10,
-    width:150,
+    width: 150,
   },
   textNew: {
     fontSize: 14,
-    width:120,
+    width: 120,
   },
   interactiveContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingLeft: 6,
+    paddingTop: 5,
+    marginRight: 24,
   },
   buttonContent: {
     flexDirection: 'row',
@@ -268,7 +336,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 5,
     marginTop: 5,
-    marginRight:5,
+    marginRight: 5,
   },
 });
 
