@@ -1,5 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
+import { useAuth } from './AuthContext';
 import { Text, View, Button, Image, StyleSheet, TouchableOpacity, TextInput, ScrollView, FlatList, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 import * as ImagePicker from 'expo-image-picker';
@@ -26,6 +27,7 @@ const AddDishes = ({ navigation }) => {
   const [currentValue2, setCurrentValue2] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentValue, setCurrentValue] = useState([]);
+  const {userId} = useAuth()
 
   const items1 = [
     { label: 'Bữa Sáng', value: 'Bữa Sáng' },
@@ -51,7 +53,7 @@ const AddDishes = ({ navigation }) => {
   ]
 
   const _submitData = () => {
-    fetch("http://192.168.146.46:3000/api/postDish", {
+    fetch("http://192.168.88.128:3000/api/postDish", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -63,9 +65,11 @@ const AddDishes = ({ navigation }) => {
         foodIngredients: foodIngredients,
         cookingTime: cookingTime,
         feel: feel,
-        foodRations: currentValue2[0],
-        mealType: currentValue1[0],
-        foodProcessingType: currentValue[0],
+        foodRations: currentValue2,
+        mealType: currentValue1,
+        foodProcessingType: currentValue,
+        userId:userId,
+        aveRating:0
       })
     }).then(res => res.json())
       .then(data => {
@@ -138,7 +142,7 @@ const AddDishes = ({ navigation }) => {
 
 
   const handleDelete = async (id) => {
-    const data = await axios.delete('http://192.168.146.46:3000/api/delete/' + id)
+    const data = await axios.delete('http://192.168.88.128:3000/api/delete/' + id)
 
     if (data.data.success) {
       getapiloaihoa()
