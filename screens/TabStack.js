@@ -14,7 +14,7 @@ import LoSign from '../URL/LoSign';
 import Login from './login';
 import TopTabProfile from '../URL/TopTabProfile';
 import UserDetails from './ProfileDetails';
-
+import BaiViet from '../screens/BaiViet';
 function Pro(){
   const St = createStackNavigator ();
   return(
@@ -38,7 +38,8 @@ function TopTab(){
     >
       <St.Screen name="Cập nhật thông tin" component={UserDetails} options={{ headerShown: true}} />
       <St.Screen name="TopTabProfile" component={TopTabProfile} options={{ headerShown: false }} />  
-      <St.Screen name="Cài đặt" component={ProAuthStack} options={{ headerShown: true }} />    
+      <St.Screen name="Cài đặt" component={ProAuthStack} options={{ headerShown: true }} />   
+      <St.Screen name="Bài Viết" component={BaiViet} options={{ headerShown: true }}/>
     </St.Navigator> 
   )
 };

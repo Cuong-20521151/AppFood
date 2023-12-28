@@ -18,19 +18,29 @@ const FlatSL = ({row,data,columns,toggleExerciseSelection}) => {
           data = {rows}
           showsHorizontalScrollIndicator={false}
           renderItem = { ({item}) => (
-          <TouchableOpacity  style={styles.itemListThem} onPress={() => toggleExerciseSelection}>
-          {item.map((rowData) => (
-                    <View  key={rowData.id}>
+          <TouchableOpacity   style={styles.itemListThem} key={`row_${Math.random().toString(36).substring(7)}`} >
+          {item.map((rowData, index) => (
+                    <TouchableOpacity  key={index.toString()} onPress={() => toggleExerciseSelection({
+                      id: rowData._id,
+                      name: rowData.foodName,
+                      Photo: rowData.foodPhoto,
+                      Processing: rowData.foodProcessing,
+                      Ingredients: rowData.foodIngredients,
+                      Time: rowData.cookingTime,
+                      Feel: rowData.feel,
+                      FoodRations: rowData.foodRations,
+                      UserId: rowData.userId,
+                    })}>
                       <ImageBackground source={{uri:rowData.foodPhoto}} style={styles.postImageThem} imageStyle={{ borderRadius: 15}}> 
                         <Text style={styles.textListThem}>{rowData.foodName}</Text>
                       </ImageBackground>
                       
-                    </View>
+                    </TouchableOpacity>
                   ))
                 }
                 </TouchableOpacity > 
             )}
-            keyExtractor = {(item) => item.id}
+            keyExtractor={(item, index) => index.toString()}
             numColumns={columns}
           />
   );

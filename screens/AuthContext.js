@@ -8,6 +8,8 @@ const AuthProvider = ({children}) => {
     const [password, setPassword] = useState('');
     const [userId,setUserId] = useState([]);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [refreshData, setRefreshData] = useState(false);
+    const [savedPosts, setSavedPosts] = useState([]);
 
     const setCredentials = (newusername, newPassword) => {
         setUsername(newusername);
@@ -15,7 +17,7 @@ const AuthProvider = ({children}) => {
     }
 
     return (
-        <AuthContext.Provider value={{username, password, setCredentials, isAuthenticated, setIsAuthenticated, userId,setUserId}}>
+        <AuthContext.Provider value={{username, password, setCredentials, isAuthenticated, setIsAuthenticated, userId,setUserId, refreshData, setRefreshData,savedPosts, setSavedPosts}}>
             {children}
         </AuthContext.Provider>
     )
