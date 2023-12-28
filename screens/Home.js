@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.88.128:3000/api/getAllDish');
+        'http://192.168.100.6:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -60,7 +60,7 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.88.128:3000/api/getUser');
+        'http://192.168.100.6:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -88,7 +88,7 @@ const HomeScreen = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
           food_id: postId,
           userId: userId,
         });
@@ -299,7 +299,7 @@ const HomeScreen = ({ navigation }) => {
 
 
               <View style={styles.interactiveContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(item._id)} >
                   <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
                   <Text style={styles.textButton}>Lưu</Text>
                 </TouchableOpacity>
