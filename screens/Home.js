@@ -14,13 +14,15 @@ const HomeScreen = ({ navigation }) => {
   // const [count, setCount] = useState(false);
   // const [posts, setPosts] = useState([]);
   // const [searchQuery, setSearchQuery] = useState('');
-  const {userId,isAuthenticated} = useAuth();
+  const {userId,isAuthenticated,refreshData,
+    setRefreshData} = useAuth();
   const [dsthucdon, getdstd] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [uniqueMealTypes, setUniqueMealTypes] = useState([]);
   const [uniqueFoodProcessingTypes, setUniqueFoodProcessingTypes] = useState([]);
   const [dsuser, getuser] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
+  
 
   const getapithucdon = async () => {
     try {
@@ -85,19 +87,21 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     combineData();
   }, [dsuser, dsthucdon]);
+
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
         const response = await axios.post('http://192.168.146.46:3000/api/postSaveDish', {
-          food_id: postId,
-          userId: userId,
+            food_id: postId,
+            userId: userId,
         });
         console.log('Trạng thái lưu:', response.data);
         // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
         // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+        setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
       } catch (error) {
-        console.error('Lỗi khi lưu bài viết:', error.message);
-        // Xử lý thông báo lỗi nếu cần
+          console.error('Lỗi khi lưu bài viết:', error.message);
+          // Xử lý thông báo lỗi nếu cần
       }
     } else {
       // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
@@ -105,7 +109,20 @@ const HomeScreen = ({ navigation }) => {
       // Hiển thị thông báo yêu cầu đăng nhập nếu cần
     }
   };
-
+  const handleNavigate = (data) => {
+    // Xử lý việc chuyển đến trang khác với dữ liệu `data`
+    navigation.navigate('Bài Viết', { 
+      id: data.id,
+      name: data.name,
+      Photo: data.Photo,
+      Processing: data.Processing,
+      Ingredients: data.Ingredients,
+      Time: data.Time,
+      Feel: data.Feel,
+      FoodRations: data.FoodRations,
+      UserId: data.UserId,
+    });
+  };
   // const handleOnClicklove = (postId) => {
   //   const updatePosts = posts.map(Post => {
 
@@ -171,7 +188,7 @@ const HomeScreen = ({ navigation }) => {
   //       }
   //     }
   //     return Post;
-  //   });
+  //   });F
   //   setPosts(updatePosts);
   // };
 
@@ -236,7 +253,7 @@ const HomeScreen = ({ navigation }) => {
 
             {
               combinedData.map((Post,index) => (
-                <TouchableOpacity style={styles.post} key={`mealType_${index}`} onPress={() => navigation.navigate('BaiViet',
+                <TouchableOpacity style={styles.post} key={`mealType_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
                     Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
@@ -303,7 +320,7 @@ const HomeScreen = ({ navigation }) => {
             row={4}
             data={dsthucdon}
             columns={2}
-
+            toggleExerciseSelection={handleNavigate}
           />
 
         </View>
@@ -328,7 +345,7 @@ const HomeScreen = ({ navigation }) => {
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
 
-                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
+                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
                 </TouchableOpacity >
               )}
               keyExtractor={(item, index) => `mealType_${index}`}
@@ -351,7 +368,7 @@ const HomeScreen = ({ navigation }) => {
           data={combinedData}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => (
-            <TouchableOpacity key={`mealType_${index}`} style={styles.postNew} onPress={() => navigation.navigate('BaiViet',
+            <TouchableOpacity key={`mealType_${index}`} style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
               {
                 id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
                 Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,

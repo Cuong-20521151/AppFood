@@ -5,16 +5,16 @@ import { useAuth } from './AuthContext';
 import FlatSL from '../components/FlastSL';
 
 const SaveBV = ({ navigation }) => {
-    const { userId } = useAuth();
-    const [savedPosts, setSavedPosts] = useState([]);
-    const [tempDish, setTempDish] = useState([]); // Sử dụng state tạm thời để lưu trữ dữ liệu mới
-    const [Dish, setDish] = useState([]);
+    const { userId,savedPosts, setSavedPosts } = useAuth();
     
+    const [Dish, setDish] = useState([]);
+
     useEffect(() => {
         const fetchSavedPosts = async () => {
             try {
-                const response = await axios.get(`http://192.168.146.46:3000/api/saved-posts/${userId}`);
+                const response = await axios.get(`http://192.168.146.46:3000/api/saved-posts/` + userId);
                 setSavedPosts(response.data.savedPosts);
+                console.log(response.data);
             } catch (error) {
                 console.error('Error fetching saved posts:', error);
             }
@@ -22,10 +22,10 @@ const SaveBV = ({ navigation }) => {
 
         fetchSavedPosts();
     }, [userId]);
-    
+
     const fetchPostsByFoodId = async (foodId) => {
         try {
-            const response = await axios.get(`http://192.168.146.46:3000/api/getAllDish?food_id=${foodId}`);
+            const response = await axios.get(`http://192.168.146.46:3000/api/getAllDish/` + foodId);
             return response.data;
         } catch (error) {
             console.error('Error fetching posts by food_id:', error);
@@ -34,27 +34,37 @@ const SaveBV = ({ navigation }) => {
     };
 
     useEffect(() => {
-        // Tạo một mảng tạm thời để lưu trữ dữ liệu mới từ fetchPostsByFoodId
-        const temp = [];
         const fetchData = async () => {
+            const temp = [];
             for (const post of savedPosts) {
                 const data = await fetchPostsByFoodId(post.food_id);
                 temp.push(...data);
             }
-            setTempDish(temp);
+            setDish(temp);
         };
+        
         fetchData();
-    }, [savedPosts]);
+    }, [savedPosts]); // Update Dish khi savedPosts thay đổi
 
-    useEffect(() => {
-        // Cập nhật state Dish từ dữ liệu tạm thời sau khi đã lấy đủ dữ liệu mới
-        setDish(tempDish);
-    }, [tempDish]);
-
+    const handleNavigate = (data) => {
+        // Xử lý việc chuyển đến trang khác với dữ liệu `data`
+        navigation.navigate('Bài Viết', { 
+          id: data.id,
+          name: data.name,
+          Photo: data.Photo,
+          Processing: data.Processing,
+          Ingredients: data.Ingredients,
+          Time: data.Time,
+          Feel: data.Feel,
+          FoodRations: data.FoodRations,
+          UserId: data.UserId,
+        });
+      };
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Saved Posts</Text>
-            <FlatSL row={"2"} data={Dish} columns={"2"} />
+            {/* Hiển thị danh sách bài viết */}
+            <FlatSL row={Dish.length} data={Dish} toggleExerciseSelection={handleNavigate}/>
         </View>
     );
 };

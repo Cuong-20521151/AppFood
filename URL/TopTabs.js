@@ -2,7 +2,6 @@ import React from 'react';
 import { View, StyleSheet, TextInput, Text } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import CacBanBep from '../screens/CacBanBep';
-import StackHome from './StackHome';
 import HomeScreen from '../screens/Home';
 
 const TopTab = createMaterialTopTabNavigator();

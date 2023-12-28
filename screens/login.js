@@ -29,6 +29,7 @@ const Login = ({navigation}) => {
           setIsAuthenticated(true);
           console.log(Id[0]?._id);
           setUserId(Id[0]?._id);
+          navigation.navigate("HomeSrc")
         } else {
           Alert.alert('Sai tài khoản hoặc mật khẩu');
         }
