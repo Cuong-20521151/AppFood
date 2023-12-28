@@ -18,7 +18,7 @@ const Search = ({ navigation }) => {
 
   const getapithucdon = async () => {
     try {
-      const response = await axios.get('http://192.168.88.128:3000/api/getAllDish');
+      const response = await axios.get('http://192.168.146.46:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
     }
@@ -31,7 +31,7 @@ const Search = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.88.128:3000/api/getUser');
+        'http://192.168.146.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -59,7 +59,7 @@ const Search = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.146.46:3000/api/postSaveDish', {
           food_id: postId,
           userId: userId,
         });
@@ -138,7 +138,7 @@ const Search = ({ navigation }) => {
         scrollEnabled={false}
         data={combinedData}
         renderItem={({ item, index }) => filterData(item)}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => index.toString()}
         numColumns={2}
       />
       <View style={styles.content}>
@@ -151,8 +151,8 @@ const Search = ({ navigation }) => {
               data={combinedData}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemListDiscover} >
+              renderItem={({ item, index }) => (
+                <TouchableOpacity style={styles.itemListDiscover} key={`item_${index}`} >
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
@@ -160,7 +160,7 @@ const Search = ({ navigation }) => {
                   <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item._id.toString()}
+              keyExtractor={(item, index) => index.toString()}
             />
 
           </View>
