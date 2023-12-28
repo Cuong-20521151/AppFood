@@ -7,14 +7,14 @@ const send = 'send';
 
 const BaiViet=({navigation,route}) =>{
 
-  const { id, name:initialfoodName, Photo:initialfoodPhoto, Processing:initialfoodProcessing, 
+  const { id:initial_id, name:initialfoodName, Photo:initialfoodPhoto, Processing:initialfoodProcessing, 
     Ingredients: initialfoodIngredients, Time:initialcookingTime, Feel:initialfeel, FoodRations:initialfoodRations,
     UserId:initialuserId } = route.params;
 
   const [dscmt, getdscmt] = useState([])
   const [inputHeight, setInputHeight] = useState(80); 
   const [cmt, setCmt] = useState("")
-  const [food_id, setFood_id] = useState('') 
+  const [food_id, setFood_id] = useState(initial_id) 
   const [foodName, setFoodName] = useState(initialfoodName)
   const [foodPhoto, setFoodPhoto] = useState(initialfoodPhoto)
   const [foodProcessing, setFoodProcessing] = useState(initialfoodProcessing)
@@ -28,7 +28,7 @@ const BaiViet=({navigation,route}) =>{
   const _submitCmt = () => {
     if (userId[0]) {
       // UserId đã được xác thực, thực hiện gửi comment
-      fetch("http://192.168.88.128:3000/api/postCmt", {
+      fetch("http://192.168.146.46:3000/api/postCmt", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ const BaiViet=({navigation,route}) =>{
   const getdscomment = async () => {
     try {
         const response = await axios.get(
-            'http://192.168.88.128:3000/api/getAllCmt');
+            'http://192.168.146.46:3000/api/getAllCmt');
             const filteredComments = response.data.filter(comment => comment.food_id === route.params.id);
             getdscmt(filteredComments);
     } catch (error) {
@@ -85,7 +85,7 @@ useEffect(() => {
   const getdsuser = async () => {
     try {
         const response = await axios.get(
-            'http://192.168.88.128:3000/api/getUser');
+            'http://192.168.146.46:3000/api/getUser');
             getuser(response.data);
     } catch (error) {
         // handle err
@@ -100,7 +100,26 @@ useEffect(() => {
   const user = dsuser.find(item => item._id === initialuserId);
   setUserName(user ? user.name : '');
 }, [dsuser, initialuserId]);
-
+const handleSaveDish = async (postId) => {
+  if (userId[0]) {
+    try {
+      const response = await axios.post('http://192.168.146.46:3000/api/postSaveDish', {
+        food_id: postId,
+        userId: userId,
+      });
+      console.log('Trạng thái lưu:', response.data);
+      // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
+      // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+    } catch (error) {
+      console.error('Lỗi khi lưu bài viết:', error.message);
+      // Xử lý thông báo lỗi nếu cần
+    }
+  } else {
+    // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
+    navigation.navigate('LoSign');
+    // Hiển thị thông báo yêu cầu đăng nhập nếu cần
+  }
+};
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
@@ -116,7 +135,7 @@ useEffect(() => {
                 </View>
               </View>
         </View>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(food_id)}>
           
           <Text style={styles.textButton}> <Icon style={styles.iconButton} name={"bookmark-outline"} color={'#000'} size={15} /> Lưu</Text>
         </TouchableOpacity>

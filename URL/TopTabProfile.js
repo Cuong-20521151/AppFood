@@ -25,7 +25,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   };
   const getUser = async () => {
     try {
-      const res = await fetch('http://192.168.165.46:3000/api/getUser');
+      const res = await fetch('http://192.168.146.46:3000/api/getUser');
       const json = await res.json();
   
       // Kiểm tra và gán dữ liệu người dùng vào User nếu nó là một mảng
@@ -55,7 +55,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           <Text>Tên người dùng</Text>
         </View>
         <View style={styles.HeadIcon}>
-          <TouchableOpacity >
+          <TouchableOpacity onPress={()=>navigation.navigate("Cài đặt")}>
             <Icon name={"settings"} size={25} color={"#000"}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleMenuToggle}>
@@ -75,11 +75,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                     UserDetails(item)
                   }
                 >
-                  <Text>Thông tin người dùng: {item.name.firstname}</Text>
+                  <Text style={styles.menuItem} >Thông tin người dùng</Text>
                 </TouchableOpacity>
               ))
             ) : (
-              <Text>Không có dữ liệu người dùng</Text>
+              <Text style={styles.menuItem} >Thông tin người dùng</Text>
             )
           
           }
@@ -215,8 +215,8 @@ const styles = StyleSheet.create({
   },
 
   menuItem: {
-    fontSize: 16,
-    paddingVertical: 8,
+    fontSize: 15,
+    paddingVertical: 4,
   },
   
 });
