@@ -72,34 +72,35 @@ const Storages = ({ navigation }) => {
     const [totalDishes, setTotalDishes] = useState(0);
     const [mealTypeCounts, setMealTypeCounts] = useState({});
     const [foodProcessingTypeCounts, setFoodProcessingTypeCounts] = useState({});
-    const {userId} = useAuth()
+    const [userId, setUserId] = useState(null);
+    const { userId: contextUserId } = useAuth()
     // console.log(userId)
-    const getapithucdon = async () => {
+
+    const fetchData = async () => {
         try {
-            const response = await axios.get(
-                'http://192.168.146.46:3000/api/getUserDish/'+ userId);
+          if (userId) {
+            const response = await axios.get(`http://192.168.88.128:3000/api/getUserDish/${userId}`);
             getdstd(response.data);
+          }
         } catch (error) {
-            // handle err
-            // alert(error.message);
+          // handle error
+          // alert(error.message);
         } finally {
-            setRefreshing(false); // Dừng hiệu ứng làm mới sau khi dữ liệu đã được lấy xong
+          setRefreshing(false);
         }
-    };
-    useEffect(() => {
-        const fetchData = async () => {
-            await getapithucdon();
-            // Gọi hàm getapithucdon() sau mỗi 0.5 giây (500 milliseconds)
-            const intervalId = setInterval(async () => {
-                await getapithucdon();
-            }, 500);
-
-            // Clear interval khi component unmount
-            return () => clearInterval(intervalId);
-        };
-
+      };
+    
+      useEffect(() => {
+        setUserId(contextUserId);
+      }, [contextUserId]);
+    
+      useEffect(() => {
         fetchData();
-    }, []); // Chú ý truyền mảng rỗng để useEffect chỉ chạy một lần khi component mount
+    
+        const intervalId = setInterval(fetchData, 500);
+    
+        return () => clearInterval(intervalId);
+      }, [userId]);
 
     useEffect(() => {
         setTotalDishes(dsthucdon.length);
@@ -142,17 +143,18 @@ const Storages = ({ navigation }) => {
 
 
     const handleDelete = async (id) => {
-        const data = await axios.delete('http://192.168.146.46:3000/api/delete/' + id)
+        const data = await axios.delete(`http://192.168.88.128:3000/api/delete/${id}`);
         if (data.data.success) {
-            getapithucdon();
-            alert(data.data.message)
+            getdstd(data.data.message);
+            alert(data.data.message);
         }
-    }
+    };
+
 
     const onRefresh = () => {
         setRefreshing(true);
-        getapithucdon();
-    }
+        fetchData();
+    };
 
     const [numColumns, setNumColumns] = useState(3); // Set the initial number of columns
 
@@ -179,9 +181,6 @@ const Storages = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity onPress={()=>navigation.navigate("LoginScreen")}>
-                    <Text style={styles.text_login_account}>Đăng nhập tài khoản</Text>
-                </TouchableOpacity>
             <View>
                 <Text style={styles.text_item}>Món ăn của tôi </Text>
                 <Text style={styles.text_item}>Tổng số món ăn: {totalDishes}</Text>
@@ -220,7 +219,7 @@ const Storages = ({ navigation }) => {
                     key={`flatlist_key_${numColumns}`}
                     renderItem={({ item }) => (
                         <View style={styles.item_myFood}>
-                            <TouchableOpacity onPress={() => navigation.navigate('BaiViet',
+                            <TouchableOpacity onPress={() => navigation.navigate('Bài Viết',
                                 {
                                     id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
                                     Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
