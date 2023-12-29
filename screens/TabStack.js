@@ -79,7 +79,7 @@ const Main = () => {
             iconName = 'plus-circle'
             size = focused ? 28 : 28
             color = focused ? '#4190f4' : '#808080'
-          } else if (route.name === 'Profile') {
+          } else if (route.name === 'ProfileScreen') {
             iconName = 'user'
             size = focused ? 28 : 28
             color = focused ? '#4190f4' : '#808080'

@@ -189,22 +189,9 @@ const BaiViet = ({ navigation, route }) => {
   }, [dsuser, initialuserId]);
 
   useEffect(() => {
-    const updateImage = () => {
-      if (isAuthenticated) {
-        const user = dsuser.find(item => item._id === userId);
-        setUserImageNow(user ? user.userImage : '');
-      } else {
-        // If not authenticated, set the default image URL
-        setUserImageNow('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU');
-      }
-    };
-
-    updateImage(); // Call the function initially
-
-    const intervalId = setInterval(updateImage, 500);
-
-    return () => clearInterval(intervalId);
-  }, [dsuser, userId, isAuthenticated]);
+    const user = dsuser.find(item => item._id === userId);
+    setUserImage(user ? user.userImage : '');
+  }, [dsuser, userId]);
 
 
   const mergeUserAndComments = (dsuser, dscmt) => {
@@ -389,10 +376,19 @@ const BaiViet = ({ navigation, route }) => {
 
           <View style={styles.comment}>
             {isAuthenticated ? (
-              <Image style={styles.image} source={{ uri: userImageNow }} />
+              <Image
+                style={styles.image}
+                source={{
+                  uri: userImageNow ? userImageNow : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU'
+                }}
+              />
             ) : (
-              <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
+              <Image
+                style={styles.image}
+                source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }}
+              />
             )}
+
             <TextInput
               placeholder="Thêm bình luận"
               style={[styles.textInput, { height: Math.max(40, inputHeight) }]}

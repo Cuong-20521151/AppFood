@@ -11,22 +11,26 @@ const Stack = createStackNavigator();
 
 function StackHome() {
   return (
-      <Stack.Navigator initialRouteName="HomeSrc"
-        screenOptions={{
-          headerStyle: {
-            height: 80, // Margin top cho header
-            
-          },
-          headerShown: true,
-        }}
-      >
-        <Stack.Screen name="HomeSrc" component={TopTabs} options={{headerShown:false}}/>
-        <Stack.Screen name="Bài Viết" component={BaiViet} />
-        <Stack.Screen name="SearchMeal" component={SearchMeal} options={{headerShown:false}}/>
-        <Stack.Screen name="SearchProcessing" component={SearchProcessing} options={{headerShown:false}}/>
-        <Stack.Screen name="LoSign" component={LoSign} options={{headerShown:false}}/>
-      </Stack.Navigator>
-    
+    <Stack.Navigator initialRouteName="HomeSrc"
+      screenOptions={{
+        headerStyle: {
+          height: 180, // Margin top cho header
+
+        },
+        headerShown: true,
+      }}
+    >
+      <Stack.Screen name="HomeSrc" component={TopTabs} options={{ headerShown: false }} />
+      <Stack.Screen name="Bài Viết" component={BaiViet} options={{
+        headerStyle: {
+          height: 100,
+        },
+      }} />
+      <Stack.Screen name="SearchMeal" component={SearchMeal} options={{ headerShown: false }} />
+      <Stack.Screen name="SearchProcessing" component={SearchProcessing} options={{ headerShown: false }} />
+      <Stack.Screen name="LoSign" component={LoSign} options={{ headerShown: false }} />
+    </Stack.Navigator>
+
   );
 }
 
