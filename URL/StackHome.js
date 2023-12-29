@@ -9,6 +9,7 @@ import SearchProcessing from '../screens/SearchProcessing';
 import LoSign from '../URL/LoSign';
 import Signup from '../screens/signup';
 import Login from '../screens/login';
+import UserInfo from '../screens/ProfilePage';
 const Stack = createStackNavigator();
 const CustomHeader = ({ navigation, route }) => {
   return (
@@ -37,6 +38,7 @@ function StackHome() {
         <Stack.Screen name="LoSign" component={LoSign} options={{headerShown:false}}/>
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+        <Stack.Screen name="UserInfo" component={UserInfo} />
       </Stack.Navigator>
     
   );
