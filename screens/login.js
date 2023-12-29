@@ -17,7 +17,9 @@ const Login = ({navigation}) => {
   
   const handleLogin = async () => {
     
+
     fetch('http://192.168.19.46:3000/api/getUser')
+
       .then((res) => res.json())
       .then((json) => {
         const foundUser = json.find(user => user.username === username && user.password === password);

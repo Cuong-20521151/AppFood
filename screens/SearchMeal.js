@@ -16,7 +16,9 @@ const SearchMeal = ({ navigation, route }) => {
 
   const getapithucdon = async () => {
     try {
+
       const response = await axios.get('http://192.168.19.46:3000/api/getAllDish');
+
       getdstd(response.data);
     } catch (error) {
     }
@@ -43,7 +45,9 @@ const SearchMeal = ({ navigation, route }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
+
         'http://192.168.19.46:3000/api/getUser');
+
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -71,7 +75,9 @@ const SearchMeal = ({ navigation, route }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
+
         const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
+
           food_id: postId,
           userId: userId,
         });
@@ -96,7 +102,7 @@ const SearchMeal = ({ navigation, route }) => {
     }
     if (item.foodName.toLowerCase().includes(searchInput.toLowerCase())) {
       return (
-        <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
+        <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
           {
             id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
             Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
@@ -150,6 +156,7 @@ const SearchMeal = ({ navigation, route }) => {
         data={combinedData}
         renderItem={({ item, index }) => filterData(item)}
         keyExtractor={(item, index) => index.toString()} 
+
         numColumns={2}
       />
       <View style={styles.content}>
@@ -163,6 +170,7 @@ const SearchMeal = ({ navigation, route }) => {
               data={filteredData}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item, index })  => (
+
                 <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,

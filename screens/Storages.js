@@ -80,6 +80,7 @@ const Storages = ({ navigation }) => {
         try {
           if (userId) {
             const response = await axios.get(`http://192.168.19.46:3000/api/getUserDish/${userId}`);
+
             getdstd(response.data);
           }
         } catch (error) {
@@ -143,7 +144,9 @@ const Storages = ({ navigation }) => {
 
 
     const handleDelete = async (id) => {
+
         const data = await axios.delete(`http://192.168.19.46:3000/api/delete/${id}`);
+
         if (data.data.success) {
             getdstd(data.data.message);
             alert(data.data.message);

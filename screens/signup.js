@@ -28,20 +28,23 @@ const Signup = ({ navigation }) => {
         Alert.alert("Passwords do not match.");
         return;
       }
-
       // Additional password strength checks can be added here
 
       const response = await fetch("http://192.168.19.46:3000/api/Signup", {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          firstname: firstName,
-          lastname: lastName,
+          name:{
+            firstname: firstName,
+            lastname: lastName,
+          },
           username: username,
           email: email, // Include email field in the request body
           password: password,
+          // userImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU",
         }),
       });
 

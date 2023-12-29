@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+
 import { View, Text, TextInput, Button, StyleSheet,TouchableOpacity,Image,Alert } from 'react-native';
+
 import Icon from 'react-native-vector-icons/Ionicons'
 import * as ImagePicker from 'expo-image-picker';
 const upload = 'cloud-upload';
@@ -15,14 +17,18 @@ const UserDetails = ({ navigation, route }) => {
     },
     address: Users.address,
     email: Users.email,
+
     phone: Users.phone,
+
     userImage: Users.userImage,
     // Add other fields if necessary
   });
 
   const handleUpdate = async () => {
     try {
+
       const response = await fetch(`http://192.168.19.46:3000/api/updateUser/${Users._id}`, {
+
         method: 'PATCH', // or 'PATCH' depending on your API
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +41,9 @@ const UserDetails = ({ navigation, route }) => {
             },
             address: editedUser.address,
             email: editedUser.email,
+
             phone: editedUser.phone,
+
             userImage: userImage,
           }
         ),

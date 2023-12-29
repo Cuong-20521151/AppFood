@@ -25,6 +25,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   };
   const getUser = async () => {
     try {
+
       const res = await fetch('http://192.168.19.46:3000/api/getUser');
       const json = await res.json();
   

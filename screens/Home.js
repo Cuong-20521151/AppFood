@@ -25,7 +25,9 @@ const HomeScreen = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
+
         'http://192.168.19.46:3000/api/getAllDish');
+
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -62,6 +64,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       const response = await axios.get(
         'http://192.168.19.46:3000/api/getUser');
+
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -102,7 +105,9 @@ const HomeScreen = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
+
         const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
+
           food_id: postId,
           userId: userId,
         });
@@ -148,6 +153,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
           <View >
             <Text style={styles.textHeadList}>Trong tủ lạnh của bạn có gì?</Text>
+
             <Text>Chọn đến bữa ăn</Text>
             <FlatList
             horizontal={true}
@@ -176,6 +182,7 @@ const HomeScreen = ({ navigation }) => {
 
             {
               mealTypeDish.map((Post, index) => (
+
                 <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
@@ -185,7 +192,11 @@ const HomeScreen = ({ navigation }) => {
                   <View style={styles.headerPost}>
                     <ImageBackground source={{ uri: Post.foodPhoto }} style={styles.postImage} imageStyle={{ borderTopLeftRadius: 15, borderTopRightRadius: 15, }}>
                       <View style={styles.postHead}>
-                        <Image source={{ uri: Post.profileImage }} style={styles.projectImage}></Image>
+                        {Post.user && Post.user.userImage && Post.user.userImage.trim() !== '' ? (
+                          <Image source={{ uri: Post.user.userImage }} style={styles.projectImage} />
+                        ) : (
+                          <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU' }} style={styles.projectImage} />
+                        )}
                         <Text style={styles.text}>{Post.user && Post.user.name
                           ? `${Post.user.name.lastname} ${Post.user.name.firstname}`
                           : 'Unknown User'}</Text>
@@ -256,7 +267,9 @@ const HomeScreen = ({ navigation }) => {
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item, index }) => (
+
                 <TouchableOpacity key={`item_${index}`} style={styles.itemListDiscover} >
+
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
@@ -296,7 +309,11 @@ const HomeScreen = ({ navigation }) => {
                 <Image source={{ uri: item.foodPhoto }} style={styles.postImageNew}>
                 </Image>
                 <View style={styles.postHeadNew}>
-                  <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNjuAlP67tv7QzTpcc--fy9UnBSM3JszDFCw&usqp=CAU' }} style={styles.projectImage}></Image>
+                  {item.user && item.user.userImage && item.user.userImage.trim() !== '' ? (
+                    <Image source={{ uri: item.user.userImage }} style={styles.projectImage} />
+                  ) : (
+                    <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU' }} style={styles.projectImage} />
+                  )}
                   <Text style={styles.textNew}>{item.user && item.user.name
                     ? `${item.user.name.lastname} ${item.user.name.firstname}`
                     : 'Unknown User'}</Text>
@@ -307,7 +324,7 @@ const HomeScreen = ({ navigation }) => {
 
 
               <View style={styles.interactiveContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(item._id)} >
                   <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
                   <Text style={styles.textButton}>Lưu</Text>
                 </TouchableOpacity>
@@ -389,7 +406,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 6,
     paddingTop: 5,
-    marginRight:24,
+    marginRight: 24,
   },
 
   itemList: {
