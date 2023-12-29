@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet,TouchableOpacity,Image } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'
+import * as ImagePicker from 'expo-image-picker';
+const upload = 'cloud-upload';
+const checkmark = 'checkmark';
 
 const UserDetails = ({ navigation, route }) => {
   const { Users } = route.params;
+  const [userImage, setuserImage] = useState(Users.userImage)
   const [editedUser, setEditedUser] = useState({
     name: {
       firstname: Users.name.firstname,
@@ -11,6 +16,7 @@ const UserDetails = ({ navigation, route }) => {
     address: Users.address,
     email: Users.email,
     phone: Users.phone.toString(),
+    userImage: Users.userImage,
     // Add other fields if necessary
   });
 
@@ -30,6 +36,7 @@ const UserDetails = ({ navigation, route }) => {
             address: editedUser.address,
             email: editedUser.email,
             phone: editedUser.phone.toString(),
+            userImage: userImage,
           }
         ),
       });
@@ -46,16 +53,58 @@ const UserDetails = ({ navigation, route }) => {
     }
   };
 
+  const _uploadImage = async () => {
+    const options = {
+      base64: true,
+      quality: 1,
+    }
+    const file = await ImagePicker.launchImageLibraryAsync(options)
+    if (!file.canceled) {
+      handleUpdata(file.assets[0])
+    }
+  }
+
+
+  const _takePhoto = async () => {
+    const options = {
+      base64: true,
+      quality: 1,
+    }
+    const file = await ImagePicker.launchCameraAsync(options)
+    if (!file.canceled) {
+      handleUpdata(file.assets[0])
+    }
+  }
+
+  const handleUpdata = async (image) => {
+    const data = new FormData()
+    data.append('file', `data:image/jpg;base64,${image.base64}`)
+    data.append('api_key', '245216386178123')
+    data.append("upload_preset", "foodPhotos")
+    data.append("folder", "FoodIE307")
+    data.append("cloud_name", "dndvr8ko9")
+    const res = await fetch("https://api.cloudinary.com/v1_1/dndvr8ko9/image/upload", {
+      method: 'POST',
+      body: data,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    const picture_url = (await res.json()).secure_url
+    setuserImage(picture_url)
+  }
+
   return (
     <View style={styles.container}>
-      {/* <TouchableOpacity style={styles.upload_image} mode="contained"
+      <TouchableOpacity style={styles.upload_image} mode="contained"
           onPress={() => _uploadImage()}>
-          <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
+          <Icon name={userImage == "" ? upload : checkmark} size={50}></Icon>
           <Text>Chọn ảnh</Text>
-          {foodPhoto !== "" && (
-          <Image source={{ uri: foodPhoto }} style={styles.image} />
+          {userImage !== "" && (
+          <Image source={{ uri: userImage }} style={styles.image} />
           )}
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       <Text style={styles.label}>Firstname:</Text>
       <TextInput
         style={styles.input}
@@ -113,6 +162,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+  },
+  upload_image: {
+    alignItems: 'center',
+  },
+  image: {
+    height: 100,
+    width: 100,
   },
 });
 

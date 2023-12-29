@@ -38,10 +38,13 @@ const Signup = ({ navigation }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          firstname: firstName,
-          lastname: lastName,
+          name:{
+            firstname: firstName,
+            lastname: lastName,
+          },
           username: username,
           password: password,
+          // userImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU",
         }),
       });
 

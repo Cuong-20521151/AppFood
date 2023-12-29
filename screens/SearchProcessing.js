@@ -95,7 +95,7 @@ const SearchProcessing = ({ navigation, route }) => {
     }
     if (item.foodName.toLowerCase().includes(searchInput.toLowerCase())) {
       return (
-        <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
+        <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
           {
             id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
             Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
@@ -147,20 +147,21 @@ const SearchProcessing = ({ navigation, route }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item, index }) => filterData(item)}
-        keyExtractor={(item) => item.id}
+        renderItem={({ item, index })  => filterData(item)}
+        keyExtractor={(item, index) => index.toString()}
         numColumns={2}
       />
       <View style={styles.content}>
         <View>
           <Text style={styles.textHeadList}>Loại chế biến: {firstFoodProcessingType}</Text>
           <View style={styles.row}>
-            <FlatList
+          <FlatList
               scrollEnabled={false}
               data={filteredData}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
                     Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
@@ -192,7 +193,6 @@ const SearchProcessing = ({ navigation, route }) => {
                     />
                   </View>
                 </TouchableOpacity>
-
               )}
               keyExtractor={(item) => item.id}
 

@@ -85,7 +85,7 @@ const Search = ({ navigation }) => {
     }
     if (item.foodName.toLowerCase().includes(searchInput.toLowerCase())) {
       return (
-        <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
+        <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
           {
             id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
             Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
@@ -137,8 +137,8 @@ const Search = ({ navigation }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item, index }) => filterData(item)}
-        keyExtractor={(item) => item.id}
+        renderItem={({ item, index })  => filterData(item)}
+        keyExtractor={(item, index) => index.toString()}
         numColumns={2}
       />
       <View style={styles.content}>
@@ -151,8 +151,8 @@ const Search = ({ navigation }) => {
               data={combinedData}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.itemListDiscover} >
+              renderItem={({ item, index }) => (
+                <TouchableOpacity style={styles.itemListDiscover} key={`item_${index}`}>
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
@@ -160,7 +160,7 @@ const Search = ({ navigation }) => {
                   <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
                 </TouchableOpacity >
               )}
-              keyExtractor={(item) => item._id.toString()}
+              keyExtractor={(item, index) => index.toString()}
             />
 
           </View>
