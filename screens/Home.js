@@ -25,11 +25,11 @@ const HomeScreen = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.146.46:3000/api/getAllDish');
+        'http://192.168.19.46:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
       // handle err
-      // alert(error.message);
+      // alert(error.message);h
     } finally {
       setRefreshing(false); // Dừng hiệu ứng làm mới sau khi dữ liệu đã được lấy xong
     }
@@ -61,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.146.46:3000/api/getUser');
+        'http://192.168.19.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -74,20 +74,20 @@ const HomeScreen = ({ navigation }) => {
 
   const combineData = () => {
     // Kết hợp dữ liệu từ dsuser và dsthucdon khi userId trùng nhau
-    const combinedData = dsthucdon.find(post => {
+    const combinedData = dsthucdon.map(post => {
       const user = dsuser.find(user => user._id === post.userId);
       return { ...post, user };
     });
 
     setCombinedData(combinedData);
   };
-  
+
   useEffect(() => {
     combineData();
   }, [dsuser, dsthucdon]);
 
   const MealTypeDish = () => {
-    fetch('http://192.168.146.46:3000/api/getAllDish')
+    fetch('http://192.168.19.46:3000/api/getAllDish')
       .then((res) => res.json())
       .then((json) => {
         const foundUser = json.filter(food => food.mealType === selectedItemIndex);
@@ -102,7 +102,7 @@ const HomeScreen = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.146.46:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
           food_id: postId,
           userId: userId,
         });

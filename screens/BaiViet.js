@@ -36,7 +36,7 @@ const BaiViet=({navigation,route}) =>{
   const _submitCmt = () => {
     if (userId[0]) {
       // UserId đã được xác thực, thực hiện gửi comment
-      fetch("http://192.168.146.46:3000/api/postCmt", {
+      fetch("http://192.168.19.46:3000/api/postCmt", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -63,7 +63,7 @@ const BaiViet=({navigation,route}) =>{
   const _submitRating = (rating) => {
     if (userId[0] && rating !== undefined) {
       // UserId đã được xác thực, thực hiện gửi comment
-      fetch("http://192.168.146.46:3000/api/postRating", {
+      fetch("http://192.168.19.46:3000/api/postRating", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -90,7 +90,7 @@ const BaiViet=({navigation,route}) =>{
   const getdscomment = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.146.46:3000/api/getAllCmt');
+        'http://192.168.19.46:3000/api/getAllCmt');
       const filteredComments = response.data.filter(comment => comment.food_id === route.params.id);
       getdscmt(filteredComments);
     } catch (error) {
@@ -130,7 +130,7 @@ const BaiViet=({navigation,route}) =>{
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.146.46:3000/api/getUser');
+        'http://192.168.19.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -144,7 +144,7 @@ const BaiViet=({navigation,route}) =>{
   const getdsrating = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.146.46:3000/api/getAllRating');
+        'http://192.168.19.46:3000/api/getAllRating');
       getrating(response.data);
     } catch (error) {
       // handle err
@@ -212,7 +212,7 @@ const BaiViet=({navigation,route}) =>{
 
   const updateAveRating = async (newAverageRating) => {
     try {
-      const response = await fetch(`http://192.168.146.46:3000/api/updateAveRating/` + route.params.id, {
+      const response = await fetch(`http://192.168.19.46:3000/api/updateAveRating/` + route.params.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -236,7 +236,7 @@ const BaiViet=({navigation,route}) =>{
 const handleSaveDish = async (postId) => {
   if (userId[0]) {
     try {
-      const response = await axios.post('http://192.168.146.46:3000/api/postSaveDish', {
+      const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
         food_id: postId,
         userId: userId,
       });

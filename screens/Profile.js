@@ -26,25 +26,19 @@ const Profile = ({navigation}) => {
                     <Image source={require('../assets/vn.png')} style={styles.vn_image}/>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Text style={styles.text} onPress={() => navigation.navigate('ChinhSach')}>Điều Khoản Bảo Mật</Text>
+                    <Text style={styles.text} onPress={() => navigation.navigate('Chính sách')}>Chính sách Bảo Mật</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Text style={styles.text} onPress={() => navigation.navigate('DieuKhoan')}>Điều Khoản Dịch Vụ</Text>
+                    <Text style={styles.text} onPress={() => navigation.navigate('Điều khoản')}>Điều Khoản Dịch Vụ</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Text style={styles.text} onPress={() => navigation.navigate('HuongDan')}>Hướng Dẫn Dành Cho Cộng Đồng Cookpad</Text>
+                    <Text style={styles.text} onPress={() => navigation.navigate('Hướng dẫn')}>Hướng Dẫn Dành Cho Cộng Đồng Cookpad</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Text style={styles.text} onPress={() => navigation.navigate('CauHoiThuongGap')}>Những Câu Hỏi Thường Gặp</Text>
+                    <Text style={styles.text} onPress={() => navigation.navigate('Câu hỏi thường gặp')}>Những Câu Hỏi Thường Gặp</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
                     <Text style={styles.text}>Liên Hệ</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Text style={styles.text}>Về Cookpad</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Text style={styles.text}>Chủ đề</Text>
                 </TouchableOpacity>
             </View>
         </View>
