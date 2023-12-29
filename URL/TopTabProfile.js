@@ -25,7 +25,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   };
   const getUser = async () => {
     try {
-      const res = await fetch('http://192.168.100.6:3000/api/getUser');
+      const res = await fetch('http://192.168.19.46:3000/api/getUser');
       const json = await res.json();
   
       // Kiểm tra và gán dữ liệu người dùng vào User nếu nó là một mảng
@@ -49,11 +49,18 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   return (
     <View style={styles.tabBar}>
       <View style={styles.Head}>
-        <View style={styles.HeadUser}>
-          <Image source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU'}}
-      style={styles.logo}></Image>
-          <Text>Tên người dùng</Text>
-        </View>
+      {
+        Array.isArray(User) && User.length > 0 ? (
+          User.map((userData) => (
+            <View key={userData._id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image source={{ uri: userData.userImage }} style={styles.logo} />
+              <Text style={styles.UserName}>{userData.username}</Text>
+            </View>
+          ))
+        ) : (
+          <Text>Loading...</Text>
+      )}
+
         <View style={styles.HeadIcon}>
           <TouchableOpacity onPress={()=>navigation.navigate("Cài đặt")}>
             <Icon name={"settings"} size={25} color={"#000"}/>
@@ -218,7 +225,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingVertical: 4,
   },
-  
+  UserName:{
+    fontSize: 24,
+    fontWeight:'bold',
+  }
 });
 
 export default TopTabProfile;
