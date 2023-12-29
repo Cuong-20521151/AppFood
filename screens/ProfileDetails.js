@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet,TouchableOpacity,Image,Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'
+import * as ImagePicker from 'expo-image-picker';
+const upload = 'cloud-upload';
+const checkmark = 'checkmark';
 
 const UserDetails = ({ navigation, route }) => {
   const { Users } = route.params;
+  const [userImage, setuserImage] = useState(Users.userImage)
   const [editedUser, setEditedUser] = useState({
     name: {
       firstname: Users.name.firstname,
@@ -11,6 +16,7 @@ const UserDetails = ({ navigation, route }) => {
     address: Users.address,
     email: Users.email,
     phone: Users.phone,
+    userImage: Users.userImage,
     // Add other fields if necessary
   });
 
@@ -30,6 +36,7 @@ const UserDetails = ({ navigation, route }) => {
             address: editedUser.address,
             email: editedUser.email,
             phone: editedUser.phone,
+            userImage: userImage,
           }
         ),
       });
@@ -37,25 +44,69 @@ const UserDetails = ({ navigation, route }) => {
       if (response.ok) {
         // Handle successful update
         console.log('User information updated successfully');
+        Alert.alert('Cập nhật thành công!');
       } else {
         // Log additional information about the response for debugging
         console.error('Failed to update user information:', response.status, response.statusText);
+        Alert.alert('Cập nhật thất bại!');
       }
     } catch (error) {
       console.error('Error updating user information:', error);
     }
   };
 
+  const _uploadImage = async () => {
+    const options = {
+      base64: true,
+      quality: 1,
+    }
+    const file = await ImagePicker.launchImageLibraryAsync(options)
+    if (!file.canceled) {
+      handleUpdata(file.assets[0])
+    }
+  }
+
+
+  const _takePhoto = async () => {
+    const options = {
+      base64: true,
+      quality: 1,
+    }
+    const file = await ImagePicker.launchCameraAsync(options)
+    if (!file.canceled) {
+      handleUpdata(file.assets[0])
+    }
+  }
+
+  const handleUpdata = async (image) => {
+    const data = new FormData()
+    data.append('file', `data:image/jpg;base64,${image.base64}`)
+    data.append('api_key', '245216386178123')
+    data.append("upload_preset", "foodPhotos")
+    data.append("folder", "FoodIE307")
+    data.append("cloud_name", "dndvr8ko9")
+    const res = await fetch("https://api.cloudinary.com/v1_1/dndvr8ko9/image/upload", {
+      method: 'POST',
+      body: data,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    const picture_url = (await res.json()).secure_url
+    setuserImage(picture_url)
+  }
+
   return (
     <View style={styles.container}>
-      {/* <TouchableOpacity style={styles.upload_image} mode="contained"
+      <TouchableOpacity style={styles.upload_image} mode="contained"
           onPress={() => _uploadImage()}>
-          <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
+          <Icon name={userImage == "" ? upload : checkmark} size={50}></Icon>
           <Text>Chọn ảnh</Text>
-          {foodPhoto !== "" && (
-          <Image source={{ uri: foodPhoto }} style={styles.image} />
+          {userImage !== "" && (
+          <Image source={{ uri: userImage }} style={styles.image} />
           )}
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       <Text style={styles.label}>Firstname:</Text>
       <TextInput
         style={styles.input}
@@ -85,8 +136,16 @@ const UserDetails = ({ navigation, route }) => {
       <Text style={styles.label}>Phone:</Text>
       <TextInput
         style={styles.input}
-        value={editedUser.phone}
-        onChangeText={(text) => setEditedUser({ ...editedUser, phone: text })}
+        value={editedUser.phone ? editedUser.phone.toString() : ''}
+        onChangeText={(text) => {
+          const parsedPhone = parseInt(text, 10);
+          if (!isNaN(parsedPhone)) {
+            setEditedUser({ ...editedUser, phone: parsedPhone });
+          } else {
+            setEditedUser({ ...editedUser, phone: null }); // Đặt phone thành null nếu không phải số
+          }
+        }}
+        keyboardType="numeric" // Bàn phím chỉ hiển thị số
       />
 
       {/* Add other input fields as needed for other user details */}
@@ -113,6 +172,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+  },
+  upload_image: {
+    alignItems: 'center',
+  },
+  image: {
+    height: 100,
+    width: 100,
   },
 });
 

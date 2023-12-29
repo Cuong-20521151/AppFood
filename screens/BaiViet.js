@@ -1,16 +1,16 @@
-import React, { useState,useEffect } from 'react';
-import { Text, TextInput, View, ImageBackground, Image, Button, ScrollView ,TouchableOpacity, SafeAreaView, StyleSheet,FlatList,Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, TextInput, View, ImageBackground, Image, Button, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, FlatList, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
-import { AirbnbRating } from 'react-native-ratings';
+import { Rating, AirbnbRating } from 'react-native-ratings';
 const send = 'send';
 
-const BaiViet=({navigation,route}) =>{
+const BaiViet = ({ navigation, route }) => {
 
-  const { id:initial_id, name:initialfoodName, Photo:initialfoodPhoto, Processing:initialfoodProcessing, 
-    Ingredients: initialfoodIngredients, Time:initialcookingTime, Feel:initialfeel, FoodRations:initialfoodRations,
-    UserId:initialuserId } = route.params;
+  const { id: initial_id, name: initialfoodName, Photo: initialfoodPhoto, Processing: initialfoodProcessing,
+    Ingredients: initialfoodIngredients, Time: initialcookingTime, Feel: initialfeel, FoodRations: initialfoodRations,
+    UserId: initialuserId } = route.params;
 
   const [dscmt, getdscmt] = useState([])
   const [inputHeight, setInputHeight] = useState(80);
@@ -31,10 +31,12 @@ const BaiViet=({navigation,route}) =>{
   const [averageRating, setAverageRating] = useState(0);
   const [userHasRated, setUserHasRated] = useState(false);
   const [dataChanged, setDataChanged] = useState(true);
-  const { userId } = useAuth()
+  const [userImage, setUserImage] = useState('');
+  const [userImageNow, setUserImageNow] = useState('');
+  const { userId, isAuthenticated, refreshData, setRefreshData } = useAuth();
 
   const _submitCmt = () => {
-    if (userId[0]) {
+    if (isAuthenticated) {
       // UserId đã được xác thực, thực hiện gửi comment
       fetch("http://192.168.19.46:3000/api/postCmt", {
         method: 'POST',
@@ -61,7 +63,7 @@ const BaiViet=({navigation,route}) =>{
   }
 
   const _submitRating = (rating) => {
-    if (userId[0] && rating !== undefined) {
+    if (isAuthenticated && rating !== undefined) {
       // UserId đã được xác thực, thực hiện gửi comment
       fetch("http://192.168.19.46:3000/api/postRating", {
         method: 'POST',
@@ -183,7 +185,40 @@ const BaiViet=({navigation,route}) =>{
   useEffect(() => {
     const user = dsuser.find(item => item._id === initialuserId);
     setUserName(user ? user.name : '');
+    setUserImage(user ? user.userImage : '');
   }, [dsuser, initialuserId]);
+
+  useEffect(() => {
+    const updateImage = () => {
+      if (isAuthenticated) {
+        const user = dsuser.find(item => item._id === userId);
+        setUserImageNow(user ? user.userImage : '');
+      } else {
+        // If not authenticated, set the default image URL
+        setUserImageNow('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU');
+      }
+    };
+
+    updateImage(); // Call the function initially
+
+    const intervalId = setInterval(updateImage, 500);
+
+    return () => clearInterval(intervalId);
+  }, [dsuser, userId, isAuthenticated]);
+
+
+  const mergeUserAndComments = (dsuser, dscmt) => {
+    return dscmt.map(item => {
+      const user = dsuser.find(u => u._id === item.userId);
+      return {
+        ...item,
+        user: user || { userImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU', name: 'Unknown User' }
+      };
+    });
+  };
+
+  // Inside your BaiViet component, use the function
+  const mergedComments = mergeUserAndComments(dsuser, dscmt);
 
 
   const handleRatingSubmit = (rating) => {
@@ -233,281 +268,290 @@ const BaiViet=({navigation,route}) =>{
     }
   };
 
-const handleSaveDish = async (postId) => {
-  if (userId[0]) {
-    try {
-      const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
-        food_id: postId,
-        userId: userId,
-      });
-      console.log('Trạng thái lưu:', response.data);
-      // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
-      // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
-    } catch (error) {
-      console.error('Lỗi khi lưu bài viết:', error.message);
-      // Xử lý thông báo lỗi nếu cần
+  const handleSaveDish = async () => {
+    if (isAuthenticated) {
+      try {
+        const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
+          food_id: route.params.id,
+          userId: userId,
+        });
+        console.log('Trạng thái lưu:', response.data);
+        // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
+        // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+        setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
+      } catch (error) {
+        console.error('Lỗi khi lưu bài viết:', error.message);
+        // Xử lý thông báo lỗi nếu cần
+      }
+    } else {
+      // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
+      navigation.navigate('LoSign');
+      // Hiển thị thông báo yêu cầu đăng nhập nếu cần
     }
-  } else {
-    // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
-    navigation.navigate('LoSign');
-    // Hiển thị thông báo yêu cầu đăng nhập nếu cần
-  }
-};
-return (
-  <ScrollView style={styles.container}>
-    <View style={styles.content}>
-      <Text style={styles.textH3}>{foodName}</Text>
-      <Image source={{ uri: foodPhoto }} style={styles.imageFood} />
-      <View>
-        <View style={styles.post}>
-          <View style={styles.headerPost}>
-            <View style={styles.postHead}>
-              <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
-              <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.textH3}>{foodName}</Text>
+        <Image source={{ uri: foodPhoto }} style={styles.imageFood} />
+        <View>
+          <View style={styles.post}>
+            <View style={styles.headerPost}>
+              <View style={styles.postHead}>
+                {userImage ? (
+                  <Image style={styles.image} source={{ uri: userImage }} />
+                ) : (
+                  <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
+                )}
+                <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-      <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(food_id)}>
-        
-        <Text style={styles.textButton}> <Icon style={styles.iconButton} name={"bookmark-outline"} color={'#000'} size={15} /> Lưu</Text>
-      </TouchableOpacity>
-      <View style={styles.horizontalLine}></View>
-      <View>
-        <Text style={styles.textH3}>Nguyên Liệu</Text>
-        <Text style={styles.textH5NL}>{foodIngredients}</Text>
-      </View>
-      <View style={styles.horizontalLine}></View>
-      <View>
-        <Text style={styles.textH3}>Cách Làm</Text>
-        <View style={styles.contentMake}>
-          <Text style={styles.textH5}>{foodProcessing}</Text>
-        </View>
-      </View>
-      <View style={styles.horizontalLine}></View>
-      <View>
-        <View>
-          <Text style={styles.textH3}>Thông tin người dùng</Text>
-        </View>
-      </View>
-      <View style={styles.horizontalLine}></View>
-      <View>
-        <View style={styles.headCooksnap}>
-          <Text style={styles.textH3}> <Icon style={styles.icon} name={"bookmark-outline"} color={'#000'} size={15} /> Cooksnap</Text>
-        </View>
-        <Text style={styles.textH5}>Bạn đã làm theo món này phải không? Hãy chia sẻ hình món bạn đã nấu nhé!</Text>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.textButton}>Gửi cooksnap</Text>
+        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(food_id)}>
+          <Text style={styles.textButton}> <Icon style={styles.iconButton} name={"bookmark-outline"} color={'#000'} size={15} /> Lưu</Text>
         </TouchableOpacity>
-        <Text style={styles.texth6}>Tìm hiểu thêm vào cooksnap</Text>
-      </View>
-      <View style={styles.horizontalLine}></View>
-      <View style={styles.rating}>
+        <View style={styles.horizontalLine}></View>
         <View>
-          <View style={styles.rating_cl1}>
-            <Text style={styles.textrating}>{averageRating}/({totalRatings})</Text>
+          <Text style={styles.textH3}>Nguyên Liệu</Text>
+          <Text style={styles.textH5NL}>{foodIngredients}</Text>
+        </View>
+        <View style={styles.horizontalLine}></View>
+        <View>
+          <Text style={styles.textH3}>Cách Làm</Text>
+          <View style={styles.contentMake}>
+            <Text style={styles.textH5}>{foodProcessing}</Text>
           </View>
-          <View style={styles.airbnbRating}>
-            <AirbnbRating
-              count={5}
-              reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
-              defaultRating={averageRating}
-              size={14}
-              showRating={false}
-              isDisabled
+        </View>
+        <View style={styles.horizontalLine}></View>
+        <View>
+          <View>
+            <Text style={styles.textH3}>Thông tin người dùng</Text>
+          </View>
+        </View>
+        <View style={styles.horizontalLine}></View>
+        <View>
+          <View style={styles.headCooksnap}>
+            <Text style={styles.textH3}> <Icon style={styles.icon} name={"bookmark-outline"} color={'#000'} size={15} /> Cooksnap</Text>
+          </View>
+          <Text style={styles.textH5}>Bạn đã làm theo món này phải không? Hãy chia sẻ hình món bạn đã nấu nhé!</Text>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.textButton}>Gửi cooksnap</Text>
+          </TouchableOpacity>
+          <Text style={styles.texth6}>Tìm hiểu thêm vào cooksnap</Text>
+        </View>
+        <View style={styles.horizontalLine}></View>
+        <View style={styles.rating}>
+          <View>
+            <View style={styles.rating_cl1}>
+              <Text style={styles.textrating}>{averageRating}/({totalRatings})</Text>
+            </View>
+            <View style={styles.airbnbRating}>
+              <AirbnbRating
+                count={5}
+                reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+                defaultRating={averageRating}
+                size={14}
+                showRating={false}
+                isDisabled
+              />
+            </View>
+          </View>
+        </View>
+        {!userHasRated && (
+          <AirbnbRating
+            count={5}
+            reviews={["Tệ", "Kém", "Bình thường", "OK", "Tốt", "Hmm...", "Rất tốt", "Wow", "Tuyệt vời", "Không tin được", "Chúa ơi"]}
+            defaultRating={5}
+            size={25}
+            showRating={true}
+            onFinishRating={(rating) => handleRatingSubmit(rating)}
+          />
+        )}
+
+        <View>
+          <Text style={styles.textH3}>Bình Luận</Text>
+
+          <View style={styles.comment}>
+            <FlatList
+              scrollEnabled={false}
+              data={mergedComments}
+              renderItem={({ item }) => (
+                <View style={styles.ListCmt}>
+                  <Image style={styles.image} source={{ uri: item.user.userImage }} />
+                  <Text style={styles.CmtName}>{`${item.user.name.lastname} ${item.user.name.firstname}`}</Text>
+                  <Text style={styles.textcmt}>{item.cmt}</Text>
+                </View>
+              )}
             />
           </View>
-        </View>
-      </View>
-      {!userHasRated && (
-        <AirbnbRating
-          count={5}
-          reviews={["Tệ", "Kém", "Bình thường", "OK", "Tốt", "Hmm...", "Rất tốt", "Wow", "Tuyệt vời", "Không tin được", "Chúa ơi"]}
-          defaultRating={5}
-          size={25}
-          showRating={true}
-          onFinishRating={(rating) => handleRatingSubmit(rating)}
-        />
-      )}
 
-      <View>
-        <Text style={styles.textH3}>Bình Luận</Text>
-
-        <View style={styles.comment}>
-          <FlatList
-            scrollEnabled={false}
-            data={dscmt}
-            renderItem={({ item }) => (
-              <View style={styles.ListCmt} >
-                <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
-                <Text style={styles.CmtName}>Le Quoc Dung</Text>
-                <Text style={styles.textcmt}>{item.cmt}</Text>
-              </View>
+          <View style={styles.comment}>
+            {isAuthenticated ? (
+              <Image style={styles.image} source={{ uri: userImageNow }} />
+            ) : (
+              <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
             )}
-          />
+            <TextInput
+              placeholder="Thêm bình luận"
+              style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+              textAlignVertical="top"
+              multiline
+              numberOfLines={1}
+              onContentSizeChange={(e) =>
+                handleContentSizeChange(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
+              }
+              onChangeText={text => setCmt(text)}
+              value={cmt}
+            />
+            <TouchableOpacity style={styles.IconInput}
+              onPress={() => _submitCmt()}
+            >
+              <Icon name={send} size={25}></Icon>
+            </TouchableOpacity>
+          </View>
         </View>
-
-        <View style={styles.comment}>
-          <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
-          <TextInput
-            placeholder="Thêm bình luận"
-            style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-            textAlignVertical="top"
-            multiline
-            numberOfLines={1}
-            onContentSizeChange={(e) =>
-              handleContentSizeChange(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
-            }
-            onChangeText={text => setCmt(text)}
-            value={cmt}
-          />
-          <TouchableOpacity style={styles.IconInput}
-            onPress={() => _submitCmt()}
-          >
-            <Icon name={send} size={25}></Icon>
-          </TouchableOpacity>
+        <View style={styles.horizontalLine}></View>
+        <View>
+          <Text style={styles.textH3}>Món mới của Meo</Text>
         </View>
       </View>
-      <View style={styles.horizontalLine}></View>
-      <View>
-        <Text style={styles.textH3}>Món mới của Meo</Text>
-      </View>
-    </View>
-  </ScrollView>
-);
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  backgroundColor: '#ecf0f1',
-  padding: 8,
-  marginLeft: 5,
-  marginTop: 5,
-},
+  container: {
+    flex: 1,
+    backgroundColor: '#ecf0f1',
+    padding: 8,
+    marginLeft: 5,
+    marginTop: 5,
+  },
 
-horizontalLine: {
-  height: 1,
-  backgroundColor: '#ccc',
-  marginVertical: 10,
+  horizontalLine: {
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 10,
 
-},
-textH3: {
-  fontSize: 20,
-  fontWeight: "500",
-  marginBottom: 15,
-},
-textH5: {
-  marginBottom: 10,
-},
-textH5NL: {
-  marginBottom: 10,
-  paddingBottom: 10,
-  borderBottomWidth: 2,
-  borderStyle: 'dotted',
-},
-postHead: {
-  flexDirection: "row",
-  marginLeft: 5,
-},
-button: {
-  backgroundColor: "lightblue",
-  height: 30,
-  padding: 5,
-  borderRadius: 5,
-  margin: 8
-},
-textButton: {
-  fontSize: 15,
-  marginLeft: 140,
-},
-iconButton: {
-  marginTop: 2,
-},
-contentMake: {
-  flexDirection: "row",
-  padding: 5,
+  },
+  textH3: {
+    fontSize: 20,
+    fontWeight: "500",
+    marginBottom: 15,
+  },
+  textH5: {
+    marginBottom: 10,
+  },
+  textH5NL: {
+    marginBottom: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 2,
+    borderStyle: 'dotted',
+  },
+  postHead: {
+    flexDirection: "row",
+    marginLeft: 5,
+  },
+  button: {
+    backgroundColor: "lightblue",
+    height: 30,
+    padding: 5,
+    borderRadius: 5,
+    margin: 8
+  },
+  textButton: {
+    fontSize: 15,
+    marginLeft: 140,
+  },
+  iconButton: {
+    marginTop: 2,
+  },
+  contentMake: {
+    flexDirection: "row",
+    padding: 5,
 
-},
-numberText: {
-  backgroundColor: "black",
-  color: "white",
-  fontSize: 12,
-  margin: 5,
-  paddingBottom: 7,
-  paddingLeft: 5,
-  paddingRight: 5,
-  width: 25,
-  height: 20,
-  borderRadius: 50,
-},
-headCooksnap: {
-  flexDirection: "row",
-},
-texth6: {
-  fontSize: 12,
-  textDecorationLine: 'underline',
-  textAlign: "center",
-},
-image: {
-  width: 25,
-  height: 25,
-  resizeMode: 'cover',
-  borderRadius: 50,
-  marginRight: 5,
-},
-textInput: {
-  width: 250,
-  borderColor: 'black',
-  borderWidth: 1,
-  padding: 10,
-  marginBottom: 10,
-  marginLeft: 5,
-  marginRight: 5,
-  borderRadius: 15,
+  },
+  numberText: {
+    backgroundColor: "black",
+    color: "white",
+    fontSize: 12,
+    margin: 5,
+    paddingBottom: 7,
+    paddingLeft: 5,
+    paddingRight: 5,
+    width: 25,
+    height: 20,
+    borderRadius: 50,
+  },
+  headCooksnap: {
+    flexDirection: "row",
+  },
+  texth6: {
+    fontSize: 12,
+    textDecorationLine: 'underline',
+    textAlign: "center",
+  },
+  image: {
+    width: 25,
+    height: 25,
+    resizeMode: 'cover',
+    borderRadius: 50,
+    marginRight: 5,
+  },
+  textInput: {
+    width: 250,
+    borderColor: 'black',
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 10,
+    marginLeft: 5,
+    marginRight: 5,
+    borderRadius: 15,
 
-},
-comment: {
-  flexDirection: "row",
-  marginLeft: 5,
-},
-imageFood: {
-  height: 220,
-  width: 330,
-  marginLeft: 20,
-  borderRadius: 20,
-  marginBottom: 15,
-},
-IconInput: {
-  justifyContent: "center",
-  paddingBottom: 10,
-},
-textcmt: {
-  fontSize: 16,
-},
-ListCmt: {
-  flexDirection: 'row',
-  marginBottom: 10,
-  marginTop: 5,
-},
-CmtName: {
-  fontWeight: "bold",
-  paddingRight: 10,
-  fontSize: 16,
-},
-//rating
-rating: {
-  flexDirection: 'row',
-},
-rating_cl1: {
-  marginBottom: 5,
-  paddingLeft: 10,
-},
-airbnbRating: {
-  marginTop: 5,
-},
-textrating: {
-  fontSize: 16,
-}
+  },
+  comment: {
+    flexDirection: "row",
+    marginLeft: 5,
+  },
+  imageFood: {
+    height: 220,
+    width: 330,
+    marginLeft: 20,
+    borderRadius: 20,
+    marginBottom: 15,
+  },
+  IconInput: {
+    justifyContent: "center",
+    paddingBottom: 10,
+  },
+  textcmt: {
+    fontSize: 16,
+  },
+  ListCmt: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    marginTop: 5,
+  },
+  CmtName: {
+    fontWeight: "bold",
+    paddingRight: 10,
+    fontSize: 16,
+  },
+  //rating
+  rating: {
+    flexDirection: 'row',
+  },
+  rating_cl1: {
+    marginBottom: 5,
+    paddingLeft: 10,
+  },
+  airbnbRating: {
+    marginTop: 5,
+  },
+  textrating: {
+    fontSize: 16,
+  }
 });
 export default BaiViet
