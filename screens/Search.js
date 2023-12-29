@@ -18,7 +18,9 @@ const Search = ({ navigation }) => {
 
   const getapithucdon = async () => {
     try {
-      const response = await axios.get('http://192.168.100.6:3000/api/getAllDish');
+
+      const response = await axios.get('http://192.168.19.46:3000/api/getAllDish');
+
       getdstd(response.data);
     } catch (error) {
     }
@@ -31,7 +33,9 @@ const Search = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getUser');
+
+        'http://192.168.19.46:3000/api/getUser');
+
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -59,7 +63,9 @@ const Search = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
+
+        const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
+
           food_id: postId,
           userId: userId,
         });
@@ -77,7 +83,20 @@ const Search = ({ navigation }) => {
       // Hiển thị thông báo yêu cầu đăng nhập nếu cần
     }
   };
-
+  const handleNavigate = (data) => {
+    // Xử lý việc chuyển đến trang khác với dữ liệu `data`
+    navigation.navigate('Bài Viết', {
+      id: data.id,
+      name: data.name,
+      Photo: data.Photo,
+      Processing: data.Processing,
+      Ingredients: data.Ingredients,
+      Time: data.Time,
+      Feel: data.Feel,
+      FoodRations: data.FoodRations,
+      UserId: data.UserId,
+    });
+  };
 
   const filterData = (item) => {
     if (searchInput === "") {
@@ -137,7 +156,9 @@ const Search = ({ navigation }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item, index })  => filterData(item)}
+
+        renderItem={({ item, index }) => filterData(item)}
+
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
       />
@@ -152,12 +173,14 @@ const Search = ({ navigation }) => {
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item, index }) => (
-                <TouchableOpacity style={styles.itemListDiscover} key={`item_${index}`}>
+
+                <TouchableOpacity style={styles.itemListDiscover} key={`item_${index}`} >
+
                   <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
 
-                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
+                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
                 </TouchableOpacity >
               )}
               keyExtractor={(item, index) => index.toString()}

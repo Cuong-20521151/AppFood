@@ -15,24 +15,23 @@ const Signup = ({ navigation }) => {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [confPassword, setConfPassword] = useState("");
 
   const handleSignUp = async () => {
     try {
-      if (firstName === "") {
-        Alert.alert("Vui lòng nhập tên của bạn!");
-        return;
-      }
-      if (username === "") {
-        Alert.alert("Vui lòng nhập tên đăng nhập của bạn!");
+      if (!firstName || !username || !email || !password || !confPassword) {
+        Alert.alert("Please fill in all fields.");
         return;
       }
       if (password !== confPassword) {
-        Alert.alert("Vui lòng nhập đúng mật khẩu!");
+        Alert.alert("Passwords do not match.");
         return;
       }
+      // Additional password strength checks can be added here
 
-      const response = await fetch("http://192.168.100.6:3000/api/Signup", {
+      const response = await fetch("http://192.168.19.46:3000/api/Signup", {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,6 +42,7 @@ const Signup = ({ navigation }) => {
             lastname: lastName,
           },
           username: username,
+          email: email, // Include email field in the request body
           password: password,
           // userImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU",
         }),
@@ -51,14 +51,14 @@ const Signup = ({ navigation }) => {
       const responseData = await response.json();
 
       if (response.ok) {
-        Alert.alert("Chúc mừng bạn đã đăng ký thành công!");
+        Alert.alert("Congratulations! You have successfully signed up.");
         navigation.navigate("Login");
       } else {
-        Alert.alert("Đăng ký không thành công. Vui lòng thử lại sau!");
+        Alert.alert("Signup failed. Please try again later.");
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      Alert.alert("Lỗi xảy ra khi đăng ký!");
+      Alert.alert("An error occurred during signup.");
     }
   };
 
@@ -90,6 +90,12 @@ const Signup = ({ navigation }) => {
           placeholder="Enter Lastname"
           value={lastName}
           onChangeText={(text) => setLastName(text)}
+        />
+        <CustomTextInput
+          name="mail"
+          placeholder="Enter Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
         <CustomTextInput
           name="user"

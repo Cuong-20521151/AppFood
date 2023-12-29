@@ -16,7 +16,9 @@ const SearchMeal = ({ navigation, route }) => {
 
   const getapithucdon = async () => {
     try {
-      const response = await axios.get('http://192.168.100.6:3000/api/getAllDish');
+
+      const response = await axios.get('http://192.168.19.46:3000/api/getAllDish');
+
       getdstd(response.data);
     } catch (error) {
     }
@@ -43,7 +45,9 @@ const SearchMeal = ({ navigation, route }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getUser');
+
+        'http://192.168.19.46:3000/api/getUser');
+
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -71,7 +75,9 @@ const SearchMeal = ({ navigation, route }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
+
+        const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
+
           food_id: postId,
           userId: userId,
         });
@@ -148,8 +154,9 @@ const SearchMeal = ({ navigation, route }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item, index })  => filterData(item)}
-        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => filterData(item)}
+        keyExtractor={(item, index) => index.toString()} 
+
         numColumns={2}
       />
       <View style={styles.content}>
@@ -162,8 +169,8 @@ const SearchMeal = ({ navigation, route }) => {
               scrollEnabled={false}
               data={filteredData}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) => (
+              renderItem={({ item, index })  => (
+
                 <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
@@ -197,7 +204,7 @@ const SearchMeal = ({ navigation, route }) => {
                   </View>
                 </TouchableOpacity>
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => index.toString()}
 
               numColumns={2}
             />

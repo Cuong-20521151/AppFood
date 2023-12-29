@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet,TouchableOpacity,Image } from 'react-native';
+
+import { View, Text, TextInput, Button, StyleSheet,TouchableOpacity,Image,Alert } from 'react-native';
+
 import Icon from 'react-native-vector-icons/Ionicons'
 import * as ImagePicker from 'expo-image-picker';
 const upload = 'cloud-upload';
@@ -15,14 +17,18 @@ const UserDetails = ({ navigation, route }) => {
     },
     address: Users.address,
     email: Users.email,
-    phone: Users.phone.toString(),
+
+    phone: Users.phone,
+
     userImage: Users.userImage,
     // Add other fields if necessary
   });
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://192.168.100.6:3000/api/updateUser/${Users._id}`, {
+
+      const response = await fetch(`http://192.168.19.46:3000/api/updateUser/${Users._id}`, {
+
         method: 'PATCH', // or 'PATCH' depending on your API
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +41,9 @@ const UserDetails = ({ navigation, route }) => {
             },
             address: editedUser.address,
             email: editedUser.email,
-            phone: editedUser.phone.toString(),
+
+            phone: editedUser.phone,
+
             userImage: userImage,
           }
         ),
@@ -44,9 +52,11 @@ const UserDetails = ({ navigation, route }) => {
       if (response.ok) {
         // Handle successful update
         console.log('User information updated successfully');
+        Alert.alert('Cập nhật thành công!');
       } else {
         // Log additional information about the response for debugging
         console.error('Failed to update user information:', response.status, response.statusText);
+        Alert.alert('Cập nhật thất bại!');
       }
     } catch (error) {
       console.error('Error updating user information:', error);
@@ -134,8 +144,16 @@ const UserDetails = ({ navigation, route }) => {
       <Text style={styles.label}>Phone:</Text>
       <TextInput
         style={styles.input}
-        value={editedUser.phone}
-        onChangeText={(text) => setEditedUser({ ...editedUser, phone: text })}
+        value={editedUser.phone ? editedUser.phone.toString() : ''}
+        onChangeText={(text) => {
+          const parsedPhone = parseInt(text, 10);
+          if (!isNaN(parsedPhone)) {
+            setEditedUser({ ...editedUser, phone: parsedPhone });
+          } else {
+            setEditedUser({ ...editedUser, phone: null }); // Đặt phone thành null nếu không phải số
+          }
+        }}
+        keyboardType="numeric" // Bàn phím chỉ hiển thị số
       />
 
       {/* Add other input fields as needed for other user details */}
