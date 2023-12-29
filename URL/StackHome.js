@@ -7,17 +7,18 @@ import BaiViet from '../screens/BaiViet';
 import SearchMeal from '../screens/SearchMeal';
 import SearchProcessing from '../screens/SearchProcessing';
 import LoSign from '../URL/LoSign';
-
+import Signup from '../screens/signup';
+import Login from '../screens/login';
 const Stack = createStackNavigator();
 const CustomHeader = ({ navigation, route }) => {
   return (
-    <View style={{ height: 100, elevation: 1, borderBottomWidth: 0, paddingTop: 30,paddingLeft:10,flexDirection: 'row', alignItems: 'center'  }}>
+    <View style={{ height: 100,  elevation: 1, borderBottomWidth: 0  ,paddingTop:30, paddingLeft:10,flexDirection: 'row', alignItems: 'center'  }}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <View>
           <Ionicons name="arrow-back" size={24} color="black" style={{ marginRight: 5 }} />
         </View>
       </TouchableOpacity>
-      <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}>{route.name}</Text>
+      <Text style={{ fontWeight: 'bold', color: 'black', fontSize:24 }}>{route.name}</Text>
     </View>
   );
 };
@@ -34,6 +35,8 @@ function StackHome() {
         <Stack.Screen name="SearchMeal" component={SearchMeal} options={{headerShown:false}}/>
         <Stack.Screen name="SearchProcessing" component={SearchProcessing} options={{headerShown:false}}/>
         <Stack.Screen name="LoSign" component={LoSign} options={{headerShown:false}}/>
+        <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
       </Stack.Navigator>
     
   );

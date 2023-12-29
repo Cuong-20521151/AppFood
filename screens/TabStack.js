@@ -14,6 +14,7 @@ import { useAuth } from './AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import LoSign from '../URL/LoSign';
 import Login from './login';
+import Signup from './signup';
 import TopTabProfile from '../URL/TopTabProfile';
 import UserDetails from './ProfileDetails';
 import BaiViet from '../screens/BaiViet';
@@ -34,6 +35,7 @@ function Pro(){
   return(
     <St.Navigator initialRouteName="ProAuthStackSrc">
       <St.Screen name="LoginScreen" component={Login} options={{ headerShown: false }} />
+      <St.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
       <St.Screen name="ProAuthStackSrc" component={ProAuthStack} options={{ headerShown: false }} />    
     </St.Navigator> 
   )
@@ -51,9 +53,11 @@ function TopTab(){
       <St.Screen name="TopTabProfile" component={TopTabProfile} options={{ headerShown: false }} />  
       <St.Screen name="Cài đặt" component={ProAuthStack} options={{ headerShown: true }} />   
       <St.Screen name="Bài Viết" component={BaiViet} options={{ headerShown: true }}/>
+      <St.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
     </St.Navigator> 
   )
 };
+
 const Main = () => {
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();

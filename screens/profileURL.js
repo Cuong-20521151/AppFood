@@ -20,22 +20,47 @@ const CustomHeader = ({ navigation, route }) => {
   );
 };
 const Stack = createNativeStackNavigator();
+
 const ProAuthStack = () => {
   return (
     
-      <Stack.Navigator
-        initialRouteName="Profile"
-        screenOptions={{
-          header: (props) => <CustomHeader {...props} />,
-          headerShown: true,
-        }}
-      >
-        <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-        <Stack.Screen name="Câu hỏi thường gặp" component={CauHoiThuongGap} options={{headerStyle: { paddingTop: 30 }}}/> 
-        <Stack.Screen name="Chính sách" component={ChinhSach} options={{headerStyle: { paddingTop: 30 }}} />
-        <Stack.Screen name="Điều khoản bảo mật" component={DieuKhoan} options={{headerStyle: { paddingTop: 30 }}} />
-        <Stack.Screen name="Hướng dẫn" component={HuongDan} options={{headerStyle: { paddingTop: 30 }}} />
-      </Stack.Navigator>
+    <Stack.Navigator
+    initialRouteName="Profile"
+    screenOptions={{
+      header: (props) => <CustomHeader {...props} />,
+      headerShown: true,
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    }}
+  >
+    <Stack.Screen
+      name="Profile"
+      component={Profile}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="Câu hỏi thường gặp"
+      component={CauHoiThuongGap}
+      options={{ headerShown: true }}
+    />
+    <Stack.Screen
+      name="Chính sách"
+      component={ChinhSach}
+      options={{ headerShown: true }}
+    />
+    <Stack.Screen
+      name="Điều khoản"
+      component={DieuKhoan}
+      options={{ headerShown: true }}
+    />
+    <Stack.Screen
+      name="Hướng dẫn"
+      component={HuongDan}
+      options={{ headerShown: true }}
+    />
+  </Stack.Navigator>
     
   )
 }

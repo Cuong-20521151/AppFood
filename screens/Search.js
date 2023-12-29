@@ -123,20 +123,6 @@ const Search = ({ navigation }) => {
       );
     }
   }
-  const handleNavigate = (data) => {
-    // Xử lý việc chuyển đến trang khác với dữ liệu `data`
-    navigation.navigate('Bài Viết', {
-      id: data.id,
-      name: data.name,
-      Photo: data.Photo,
-      Processing: data.Processing,
-      Ingredients: data.Ingredients,
-      Time: data.Time,
-      Feel: data.Feel,
-      FoodRations: data.FoodRations,
-      UserId: data.UserId,
-    });
-  };
 
   return (
     <ScrollView style={styles.container}>
@@ -151,8 +137,8 @@ const Search = ({ navigation }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item, index })  => filterData(item)}
-        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item})  => filterData(item)}
+        keyExtractor={(item) => item._id}
         numColumns={2}
       />
       <View style={styles.content}>
@@ -171,7 +157,7 @@ const Search = ({ navigation }) => {
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
 
-                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate}/>
+                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
                 </TouchableOpacity >
               )}
               keyExtractor={(item, index) => index.toString()}

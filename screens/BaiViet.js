@@ -92,7 +92,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdscomment = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.19.46:3000/api/getAllCmt');
+        'http://192.168.100.6:3000/api/getAllCmt');
       const filteredComments = response.data.filter(comment => comment.food_id === route.params.id);
       getdscmt(filteredComments);
     } catch (error) {
@@ -132,7 +132,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.19.46:3000/api/getUser');
+        'http://192.168.100.6:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -146,7 +146,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdsrating = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.19.46:3000/api/getAllRating');
+        'http://192.168.100.6:3000/api/getAllRating');
       getrating(response.data);
     } catch (error) {
       // handle err
