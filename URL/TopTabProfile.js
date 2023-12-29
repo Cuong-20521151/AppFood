@@ -49,10 +49,23 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   return (
     <View style={styles.tabBar}>
       <View style={styles.Head}>
+      
         <View style={styles.HeadUser}>
-          <Image source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU'}}
-      style={styles.logo}></Image>
-          <Text>Tên người dùng</Text>
+          {Array.isArray(User) && User.length > 0 ? (
+            User.map((userData) => (
+              <View key={userData._id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image source={
+                  userData.userImage
+                  ? { uri: userData.userImage }
+                  : { uri: 'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg' }} 
+                  style={styles.logo} 
+                />
+                <Text>{userData.username}</Text>
+              </View>
+            ))
+          ) : (
+            <Text>Loading...</Text>
+          )}
         </View>
         <View style={styles.HeadIcon}>
           <TouchableOpacity onPress={()=>navigation.navigate("Cài đặt")}>
@@ -218,7 +231,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingVertical: 4,
   },
-  
+  UserName:{
+    fontSize: 24,
+    fontWeight:'bold',
+  }
 });
 
 export default TopTabProfile;

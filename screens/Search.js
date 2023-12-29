@@ -137,8 +137,8 @@ const Search = ({ navigation }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item, index })  => filterData(item)}
-        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item})  => filterData(item)}
+        keyExtractor={(item) => item._id}
         numColumns={2}
       />
       <View style={styles.content}>

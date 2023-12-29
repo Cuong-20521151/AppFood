@@ -194,7 +194,7 @@ const SearchProcessing = ({ navigation, route }) => {
                   </View>
                 </TouchableOpacity>
               )}
-              keyExtractor={(item) => item.id}
+              
 
               numColumns={2}
             />

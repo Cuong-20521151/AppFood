@@ -148,8 +148,9 @@ const SearchMeal = ({ navigation, route }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item, index })  => filterData(item)}
-        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => filterData(item)}
+        keyExtractor={(item, index) => index.toString()} 
+
         numColumns={2}
       />
       <View style={styles.content}>
@@ -162,8 +163,8 @@ const SearchMeal = ({ navigation, route }) => {
               scrollEnabled={false}
               data={filteredData}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) => (
+              renderItem={({ item, index })  => (
+
                 <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,

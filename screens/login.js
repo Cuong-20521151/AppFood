@@ -10,14 +10,14 @@ import {
 } from "react-native";
 import { useAuth } from "./AuthContext"; 
 import CustomTextInput from "../components/CustomInputText";
-import axios from 'axios';
+
 import Icon from 'react-native-vector-icons/Ionicons'
 const Login = ({navigation}) => {
   const {username, password, setCredentials, setIsAuthenticated,setUserId} = useAuth()
   
   const handleLogin = async () => {
     
-    fetch('http://192.168.100.6:3000/api/getUser')
+    fetch('http://192.168.19.46:3000/api/getUser')
       .then((res) => res.json())
       .then((json) => {
         const foundUser = json.find(user => user.username === username && user.password === password);
@@ -37,7 +37,7 @@ const Login = ({navigation}) => {
       .catch((error) => console.error(error));
   };
   const handleSignUp = () => {
-    navigation.navigate('Signup')
+    navigation.navigate("Signup")
   }
 
   const handleForgotPassword = () => {
@@ -53,14 +53,14 @@ const Login = ({navigation}) => {
         <Icon style={styles.icon} name = {"close"} color = {'#000'} size = {25}/>
       </TouchableOpacity>
       <View style={styles.appContainer}>
-      <Image source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU'}}
+      <Image source={{uri:'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg'}}
       style={styles.logo}/>
       <Text style={styles.appName}>Welcome</Text>
       </View>
       
       <View style={styles.content}>
         <CustomTextInput
-          name = 'mail'
+          name = 'user'
           placeholder="username"
           value={username}
           onChangeText={(value) => setCredentials(value, password)}

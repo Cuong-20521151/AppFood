@@ -1,5 +1,7 @@
 // npm install @react-navigation/material-bottom-tabs react-native-paper react-native-vector-icons
 import React,{useEffect} from 'react'
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -12,14 +14,28 @@ import { useAuth } from './AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import LoSign from '../URL/LoSign';
 import Login from './login';
+import Signup from './signup';
 import TopTabProfile from '../URL/TopTabProfile';
 import UserDetails from './ProfileDetails';
 import BaiViet from '../screens/BaiViet';
+const CustomHeader = ({ navigation, route }) => {
+  return (
+    <View style={{ height: 100, elevation: 1, borderBottomWidth: 0, paddingTop: 30,paddingLeft:10,flexDirection: 'row', alignItems: 'center'  }}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <View >
+          <Ionicons name="arrow-back" size={24} color="black" style={{ marginRight: 5 }} />
+        </View>
+      </TouchableOpacity>
+      <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 24 }}>{route.name}</Text>
+    </View>
+  );
+};
 function Pro(){
   const St = createStackNavigator ();
   return(
     <St.Navigator initialRouteName="ProAuthStackSrc">
       <St.Screen name="LoginScreen" component={Login} options={{ headerShown: false }} />
+      <St.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
       <St.Screen name="ProAuthStackSrc" component={ProAuthStack} options={{ headerShown: false }} />    
     </St.Navigator> 
   )
@@ -29,10 +45,7 @@ function TopTab(){
   return(
     <St.Navigator initialRouteName="TopTabProfile" 
       screenOptions={{
-        headerStyle: {
-          height: 100, // Margin top cho header
-          
-        },
+        header: (props) => <CustomHeader {...props} />,
         headerShown: true,
       }}
     >
@@ -40,9 +53,11 @@ function TopTab(){
       <St.Screen name="TopTabProfile" component={TopTabProfile} options={{ headerShown: false }} />  
       <St.Screen name="Cài đặt" component={ProAuthStack} options={{ headerShown: true }} />   
       <St.Screen name="Bài Viết" component={BaiViet} options={{ headerShown: true }}/>
+      <St.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
     </St.Navigator> 
   )
 };
+
 const Main = () => {
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();

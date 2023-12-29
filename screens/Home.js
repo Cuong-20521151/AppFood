@@ -20,6 +20,10 @@ const HomeScreen = ({ navigation }) => {
   const [dsuser, getuser] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
   const [isLoading, setLoadding] = useState(true);
+  const [selectedMealType, setSelectedMealType] = useState(null);
+  const [mealTypeDish, setMealTypeDish] = useState([]);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
+  const [defaultSelectedItemIndex, setDefaultSelectedItemIndex] = useState(0);
 
 
   const getapithucdon = async () => {
@@ -29,7 +33,7 @@ const HomeScreen = ({ navigation }) => {
       getdstd(response.data);
     } catch (error) {
       // handle err
-      // alert(error.message);
+      // alert(error.message);h
     } finally {
       setRefreshing(false);
       setLoadding(false);
@@ -90,6 +94,34 @@ const HomeScreen = ({ navigation }) => {
     combineData();
   }, [dsuser, dsthucdon]);
 
+  useEffect(() => {
+    const fetchMealTypeDish = async () => {
+      if (selectedItemIndex !== -1) {
+        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+        const json = await response.json();
+        const foundUser = json.filter(food => food.mealType === uniqueMealTypes[selectedItemIndex]);
+        setMealTypeDish(foundUser);
+      } else {
+        // Nếu không có mục nào được chọn, hiển thị dữ liệu mặc định (defaultSelectedItemIndex)
+        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+        const json = await response.json();
+        const foundUser = json.filter(food => food.mealType === uniqueMealTypes[defaultSelectedItemIndex]);
+        setMealTypeDish(foundUser);
+      }
+    };
+  
+    fetchMealTypeDish();
+  }, [selectedItemIndex, defaultSelectedItemIndex]);
+  
+  // Khi defaultSelectedItemIndex thay đổi, cập nhật selectedItemIndex
+  useEffect(() => {
+    setSelectedItemIndex(defaultSelectedItemIndex);
+  }, [defaultSelectedItemIndex]);
+  useEffect(() => {
+      setSelectedItemIndex(defaultSelectedItemIndex);
+    }, []);
+  
+  
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
