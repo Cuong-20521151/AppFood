@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text,TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import TopTabs from './TopTabs';
@@ -7,7 +7,8 @@ import BaiViet from '../screens/BaiViet';
 import SearchMeal from '../screens/SearchMeal';
 import SearchProcessing from '../screens/SearchProcessing';
 import LoSign from '../URL/LoSign';
-import FlatSL from '../components/FlastSL';
+import Signup from '../screens/signup';
+import Login from '../screens/login';
 const Stack = createStackNavigator();
 const CustomHeader = ({ navigation, route }) => {
   return (
@@ -34,6 +35,8 @@ function StackHome() {
         <Stack.Screen name="SearchMeal" component={SearchMeal} options={{headerShown:false}}/>
         <Stack.Screen name="SearchProcessing" component={SearchProcessing} options={{headerShown:false}}/>
         <Stack.Screen name="LoSign" component={LoSign} options={{headerShown:false}}/>
+        <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
       </Stack.Navigator>
     
   );

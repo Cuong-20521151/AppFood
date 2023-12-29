@@ -19,15 +19,15 @@ const HomeScreen = ({ navigation }) => {
   const [uniqueFoodProcessingTypes, setUniqueFoodProcessingTypes] = useState([]);
   const [dsuser, getuser] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
-  const [selectedItemIndex, setSelectedItemIndex] = useState([]);
+  const [selectedMealType, setSelectedMealType] = useState(null);
   const [mealTypeDish, setMealTypeDish] = useState([]);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
+  const [defaultSelectedItemIndex, setDefaultSelectedItemIndex] = useState(0);
 
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-
         'http://192.168.19.46:3000/api/getAllDish');
-
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -64,7 +64,6 @@ const HomeScreen = ({ navigation }) => {
     try {
       const response = await axios.get(
         'http://192.168.19.46:3000/api/getUser');
-
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -89,25 +88,38 @@ const HomeScreen = ({ navigation }) => {
     combineData();
   }, [dsuser, dsthucdon]);
 
-  const MealTypeDish = () => {
-    fetch('http://192.168.19.46:3000/api/getAllDish')
-      .then((res) => res.json())
-      .then((json) => {
-        const foundUser = json.filter(food => food.mealType === selectedItemIndex);
-        setMealTypeDish(foundUser);
-      })
-      .catch((error) => console.error(error));
-  };
-
   useEffect(() => {
-    MealTypeDish();
-  }, [selectedItemIndex]); 
+    const fetchMealTypeDish = async () => {
+      if (selectedItemIndex !== -1) {
+        const response = await fetch('http://192.168.19.46:3000/api/getAllDish');
+        const json = await response.json();
+        const foundUser = json.filter(food => food.mealType === uniqueMealTypes[selectedItemIndex]);
+        setMealTypeDish(foundUser);
+      } else {
+        // Nếu không có mục nào được chọn, hiển thị dữ liệu mặc định (defaultSelectedItemIndex)
+        const response = await fetch('http://192.168.19.46:3000/api/getAllDish');
+        const json = await response.json();
+        const foundUser = json.filter(food => food.mealType === uniqueMealTypes[defaultSelectedItemIndex]);
+        setMealTypeDish(foundUser);
+      }
+    };
+  
+    fetchMealTypeDish();
+  }, [selectedItemIndex, defaultSelectedItemIndex]);
+  
+  // Khi defaultSelectedItemIndex thay đổi, cập nhật selectedItemIndex
+  useEffect(() => {
+    setSelectedItemIndex(defaultSelectedItemIndex);
+  }, [defaultSelectedItemIndex]);
+  useEffect(() => {
+      setSelectedItemIndex(defaultSelectedItemIndex);
+    }, []);
+  
+  
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-
-        const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
-
+        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
           food_id: postId,
           userId: userId,
         });
@@ -153,9 +165,10 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
           <View >
             <Text style={styles.textHeadList}>Trong tủ lạnh của bạn có gì?</Text>
-
-            <Text>Chọn đến bữa ăn</Text>
-            <FlatList
+            <Text>Hãy chọn bữa ăn nào!</Text>
+          </View>
+          <View >
+          <FlatList
             horizontal={true}
             data={uniqueMealTypes}
             showsHorizontalScrollIndicator={false}
@@ -163,26 +176,31 @@ const HomeScreen = ({ navigation }) => {
               <TouchableOpacity
                 style={[
                   styles.itemList,
-                  selectedItemIndex === item && { backgroundColor: 'orange' }, // Thay đổi màu nền cho mục đã chọn
+                  (selectedItemIndex === -1 && defaultSelectedItemIndex === index) || selectedItemIndex === index
+                    ? { backgroundColor: 'orange' }
+                    : null,
                 ]}
                 key={`item_${index}`}
                 onPress={() => {
-                  setSelectedItemIndex(item); // Đặt chỉ số của mục đã chọn vào trạng thái
+                  setSelectedItemIndex(index); // Đặt chỉ số của mục đã chọn vào trạng thái
                 }}
               >
-                <Icon style={styles.icon} name={iconCheck} color={'#fff'} size={15} />
+                <Icon style={styles.icon} name={selectedItemIndex === index || (selectedItemIndex === -1 && defaultSelectedItemIndex === index)
+                  ? iconCheck
+                  : iconName}
+                  color={selectedItemIndex === index || (selectedItemIndex === -1 && defaultSelectedItemIndex === index)
+                    ? '#000'
+                    : '#888'} size={15} />
                 <Text style={styles.textList}>{item}</Text>
               </TouchableOpacity>
             )}
             keyExtractor={(item, index) => index.toString()}
           />
           </View>
-          
           <ScrollView horizontal showsHorizontalScrollIndicator={false} >
 
             {
               mealTypeDish.map((Post, index) => (
-
                 <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
@@ -275,6 +293,7 @@ const HomeScreen = ({ navigation }) => {
                   </ImageBackground>
 
                   <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
+                  
                 </TouchableOpacity >
               )}
               keyExtractor={(item, index) => index.toString()}

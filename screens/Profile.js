@@ -26,10 +26,10 @@ const Profile = ({navigation}) => {
                     <Image source={require('../assets/vn.png')} style={styles.vn_image}/>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Text style={styles.text} onPress={() => navigation.navigate('Chính sách')}>Chính sách Bảo Mật</Text>
+                    <Text style={styles.text} onPress={() => navigation.navigate('Chính sách')}>Điều Khoản Bảo Mật</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Text style={styles.text} onPress={() => navigation.navigate('Điều khoản')}>Điều Khoản Dịch Vụ</Text>
+                    <Text style={styles.text} onPress={() => navigation.navigate('Điều khoản bảo mật')}>Điều Khoản Dịch Vụ</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
                     <Text style={styles.text} onPress={() => navigation.navigate('Hướng dẫn')}>Hướng Dẫn Dành Cho Cộng Đồng Cookpad</Text>

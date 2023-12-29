@@ -7,58 +7,52 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-
+import { Ionicons } from '@expo/vector-icons';
 import CustomTextInput from "../components/CustomInputText";
 
 const Signup = ({ navigation }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
   const [confPassword, setConfPassword] = useState("");
 
   const handleSignUp = async () => {
     try {
-      if (!firstName || !username || !email || !password || !confPassword) {
-        Alert.alert("Please fill in all fields.");
+      if ( !username || !password || !confPassword) {
+        Alert.alert("Làm phiền bạn điền đủ các trường!");
         return;
       }
       if (password !== confPassword) {
         Alert.alert("Passwords do not match.");
+
         return;
       }
       // Additional password strength checks can be added here
 
       const response = await fetch("http://192.168.19.46:3000/api/Signup", {
 
+      // Additional password strength checks can be added here
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name:{
-            firstname: firstName,
-            lastname: lastName,
-          },
           username: username,
-          email: email, // Include email field in the request body
           password: password,
-          // userImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU",
         }),
       });
 
       const responseData = await response.json();
 
       if (response.ok) {
-        Alert.alert("Congratulations! You have successfully signed up.");
+        Alert.alert("Chúc mừng! Bạn đã đăng ký thành công.");
         navigation.navigate("Login");
       } else {
-        Alert.alert("Signup failed. Please try again later.");
+        Alert.alert("Đăng ký thất bại. Vui lòng thử lại sau.");
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      Alert.alert("An error occurred during signup.");
+      Alert.alert("Đã xảy ra lỗi trong quá trình đăng ký.");
     }
   };
 
@@ -68,35 +62,24 @@ const Signup = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.closeButton}
+      >
+        <Ionicons style={styles.icon} name = {"arrow-back"} color = {'#000'} size = {25}/>
+      </TouchableOpacity>
       <View style={styles.appContainer}>
         <Image
           source={{
             uri:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU",
+              "https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg",
           }}
           style={styles.logo}
         />
         <Text style={styles.appName}>Create New Account</Text>
       </View>
       <View style={styles.content}>
-        <CustomTextInput
-          name="user"
-          placeholder="Enter Firstname"
-          value={firstName}
-          onChangeText={(text) => setFirstName(text)}
-        />
-        <CustomTextInput
-          name="user"
-          placeholder="Enter Lastname"
-          value={lastName}
-          onChangeText={(text) => setLastName(text)}
-        />
-        <CustomTextInput
-          name="mail"
-          placeholder="Enter Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
+        
         <CustomTextInput
           name="user"
           placeholder="Username"
@@ -191,6 +174,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    backgroundColor: 'transparent', // Để nút không có màu nền
+    zIndex: 1, // Để nút luôn nằm trên các thành phần khác
   },
 });
 
