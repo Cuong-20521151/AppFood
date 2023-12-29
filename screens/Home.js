@@ -143,11 +143,9 @@ const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.itemList} key={`item_${index}`} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
                   <Icon style={styles.icon} name={iconCheck} color={'#000'} size={15} />
                   <Text style={styles.textList}>{item}</Text>
-
                 </TouchableOpacity >
               )}
               keyExtractor={(item, index) => index.toString()}
-
             />
           </View>
           <View >
@@ -178,7 +176,11 @@ const HomeScreen = ({ navigation }) => {
                   <View style={styles.headerPost}>
                     <ImageBackground source={{ uri: Post.foodPhoto }} style={styles.postImage} imageStyle={{ borderTopLeftRadius: 15, borderTopRightRadius: 15, }}>
                       <View style={styles.postHead}>
-                        <Image source={{ uri: Post.profileImage }} style={styles.projectImage}></Image>
+                        {Post.user && Post.user.userImage && Post.user.userImage.trim() !== '' ? (
+                          <Image source={{ uri: Post.user.userImage }} style={styles.projectImage} />
+                        ) : (
+                          <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU' }} style={styles.projectImage} />
+                        )}
                         <Text style={styles.text}>{Post.user && Post.user.name
                           ? `${Post.user.name.lastname} ${Post.user.name.firstname}`
                           : 'Unknown User'}</Text>
@@ -289,7 +291,11 @@ const HomeScreen = ({ navigation }) => {
                 <Image source={{ uri: item.foodPhoto }} style={styles.postImageNew}>
                 </Image>
                 <View style={styles.postHeadNew}>
-                  <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNjuAlP67tv7QzTpcc--fy9UnBSM3JszDFCw&usqp=CAU' }} style={styles.projectImage}></Image>
+                  {item.user && item.user.userImage && item.user.userImage.trim() !== '' ? (
+                    <Image source={{ uri: item.user.userImage }} style={styles.projectImage} />
+                  ) : (
+                    <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU' }} style={styles.projectImage} />
+                  )}
                   <Text style={styles.textNew}>{item.user && item.user.name
                     ? `${item.user.name.lastname} ${item.user.name.firstname}`
                     : 'Unknown User'}</Text>
@@ -382,7 +388,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 6,
     paddingTop: 5,
-    marginRight:24,
+    marginRight: 24,
   },
 
   itemList: {

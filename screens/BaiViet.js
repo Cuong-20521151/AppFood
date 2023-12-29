@@ -8,7 +8,7 @@ const send = 'send';
 
 const BaiViet = ({ navigation, route }) => {
 
-  const { id:initial_id, name: initialfoodName, Photo: initialfoodPhoto, Processing: initialfoodProcessing,
+  const { id: initial_id, name: initialfoodName, Photo: initialfoodPhoto, Processing: initialfoodProcessing,
     Ingredients: initialfoodIngredients, Time: initialcookingTime, Feel: initialfeel, FoodRations: initialfoodRations,
     UserId: initialuserId } = route.params;
 
@@ -31,7 +31,9 @@ const BaiViet = ({ navigation, route }) => {
   const [averageRating, setAverageRating] = useState(0);
   const [userHasRated, setUserHasRated] = useState(false);
   const [dataChanged, setDataChanged] = useState(true);
-  const { userId, isAuthenticated,refreshData,setRefreshData } = useAuth();
+  const [userImage, setUserImage] = useState('');
+  const [userImageNow, setUserImageNow] = useState('');
+  const { userId, isAuthenticated, refreshData, setRefreshData } = useAuth();
 
   const _submitCmt = () => {
     if (isAuthenticated) {
@@ -183,7 +185,40 @@ const BaiViet = ({ navigation, route }) => {
   useEffect(() => {
     const user = dsuser.find(item => item._id === initialuserId);
     setUserName(user ? user.name : '');
+    setUserImage(user ? user.userImage : '');
   }, [dsuser, initialuserId]);
+
+  useEffect(() => {
+    const updateImage = () => {
+      if (isAuthenticated) {
+        const user = dsuser.find(item => item._id === userId);
+        setUserImageNow(user ? user.userImage : '');
+      } else {
+        // If not authenticated, set the default image URL
+        setUserImageNow('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU');
+      }
+    };
+
+    updateImage(); // Call the function initially
+
+    const intervalId = setInterval(updateImage, 500);
+
+    return () => clearInterval(intervalId);
+  }, [dsuser, userId, isAuthenticated]);
+
+
+  const mergeUserAndComments = (dsuser, dscmt) => {
+    return dscmt.map(item => {
+      const user = dsuser.find(u => u._id === item.userId);
+      return {
+        ...item,
+        user: user || { userImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU', name: 'Unknown User' }
+      };
+    });
+  };
+
+  // Inside your BaiViet component, use the function
+  const mergedComments = mergeUserAndComments(dsuser, dscmt);
 
 
   const handleRatingSubmit = (rating) => {
@@ -264,7 +299,11 @@ const BaiViet = ({ navigation, route }) => {
           <View style={styles.post}>
             <View style={styles.headerPost}>
               <View style={styles.postHead}>
-                <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
+                {userImage ? (
+                  <Image style={styles.image} source={{ uri: userImage }} />
+                ) : (
+                  <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
+                )}
                 <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
               </View>
             </View>
@@ -337,11 +376,11 @@ const BaiViet = ({ navigation, route }) => {
           <View style={styles.comment}>
             <FlatList
               scrollEnabled={false}
-              data={dscmt}
+              data={mergedComments}
               renderItem={({ item }) => (
-                <View style={styles.ListCmt} >
-                  <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
-                  <Text style={styles.CmtName}>Le Quoc Dung</Text>
+                <View style={styles.ListCmt}>
+                  <Image style={styles.image} source={{ uri: item.user.userImage }} />
+                  <Text style={styles.CmtName}>{`${item.user.name.lastname} ${item.user.name.firstname}`}</Text>
                   <Text style={styles.textcmt}>{item.cmt}</Text>
                 </View>
               )}
@@ -349,7 +388,11 @@ const BaiViet = ({ navigation, route }) => {
           </View>
 
           <View style={styles.comment}>
-            <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
+            {isAuthenticated ? (
+              <Image style={styles.image} source={{ uri: userImageNow }} />
+            ) : (
+              <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
+            )}
             <TextInput
               placeholder="Thêm bình luận"
               style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
