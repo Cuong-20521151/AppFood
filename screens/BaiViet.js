@@ -38,7 +38,7 @@ const BaiViet = ({ navigation, route }) => {
   const _submitCmt = () => {
     if (isAuthenticated) {
       // UserId đã được xác thực, thực hiện gửi comment
-      fetch("http://192.168.19.46:3000/api/postCmt", {
+      fetch("http://192.168.100.6:3000/api/postCmt", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ const BaiViet = ({ navigation, route }) => {
   const _submitRating = (rating) => {
     if (isAuthenticated && rating !== undefined) {
       // UserId đã được xác thực, thực hiện gửi comment
-      fetch("http://192.168.19.46:3000/api/postRating", {
+      fetch("http://192.168.100.6:3000/api/postRating", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -189,22 +189,9 @@ const BaiViet = ({ navigation, route }) => {
   }, [dsuser, initialuserId]);
 
   useEffect(() => {
-    const updateImage = () => {
-      if (isAuthenticated) {
-        const user = dsuser.find(item => item._id === userId);
-        setUserImageNow(user ? user.userImage : '');
-      } else {
-        // If not authenticated, set the default image URL
-        setUserImageNow('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU');
-      }
-    };
-
-    updateImage(); // Call the function initially
-
-    const intervalId = setInterval(updateImage, 500);
-
-    return () => clearInterval(intervalId);
-  }, [dsuser, userId, isAuthenticated]);
+    const user = dsuser.find(item => item._id === userId);
+    setUserImage(user ? user.userImage : '');
+  }, [dsuser, userId]);
 
 
   const mergeUserAndComments = (dsuser, dscmt) => {
@@ -247,7 +234,7 @@ const BaiViet = ({ navigation, route }) => {
 
   const updateAveRating = async (newAverageRating) => {
     try {
-      const response = await fetch(`http://192.168.19.46:3000/api/updateAveRating/` + route.params.id, {
+      const response = await fetch(`http://192.168.100.6:3000/api/updateAveRating/` + route.params.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -271,7 +258,7 @@ const BaiViet = ({ navigation, route }) => {
   const handleSaveDish = async () => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.19.46:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
           food_id: route.params.id,
           userId: userId,
         });
@@ -389,10 +376,19 @@ const BaiViet = ({ navigation, route }) => {
 
           <View style={styles.comment}>
             {isAuthenticated ? (
-              <Image style={styles.image} source={{ uri: userImageNow }} />
+              <Image
+                style={styles.image}
+                source={{
+                  uri: userImageNow ? userImageNow : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU'
+                }}
+              />
             ) : (
-              <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
+              <Image
+                style={styles.image}
+                source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }}
+              />
             )}
+
             <TextInput
               placeholder="Thêm bình luận"
               style={[styles.textInput, { height: Math.max(40, inputHeight) }]}

@@ -12,7 +12,7 @@ const UserInfo = ({ route }) => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const userResponse = await axios.get(`http://192.168.19.46:3000/api/user-info/`+userId);
+        const userResponse = await axios.get(`http://192.168.100.6:3000/api/user-info/`+userId);
         const { user, userPostsCount } = userResponse.data;
         setUserInfo(user);
         setUserPostsCount(userPostsCount);

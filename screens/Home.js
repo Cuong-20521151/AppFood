@@ -1,6 +1,6 @@
 //import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ImageBackground, Button, FlatList, TextInput, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ImageBackground, Button, FlatList, TextInput, RefreshControl, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FlatSL from '../components/FlastSL';
 import { AirbnbRating } from 'react-native-ratings';
@@ -19,21 +19,24 @@ const HomeScreen = ({ navigation }) => {
   const [uniqueFoodProcessingTypes, setUniqueFoodProcessingTypes] = useState([]);
   const [dsuser, getuser] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
+  const [isLoading, setLoadding] = useState(true);
   const [selectedMealType, setSelectedMealType] = useState(null);
   const [mealTypeDish, setMealTypeDish] = useState([]);
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
   const [defaultSelectedItemIndex, setDefaultSelectedItemIndex] = useState(0);
 
+
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.19.46:3000/api/getAllDish');
+        'http://192.168.100.6:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
       // handle err
       // alert(error.message);h
     } finally {
-      setRefreshing(false); // Dừng hiệu ứng làm mới sau khi dữ liệu đã được lấy xong
+      setRefreshing(false);
+      setLoadding(false);
     }
   };
   useEffect(() => {
@@ -63,11 +66,14 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.19.46:3000/api/getUser');
+        'http://192.168.100.6:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
       // alert(error.message);
+    } finally {
+      setRefreshing(false);
+      setLoadding(false);
     }
   };
   useEffect(() => {
@@ -91,13 +97,13 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchMealTypeDish = async () => {
       if (selectedItemIndex !== -1) {
-        const response = await fetch('http://192.168.19.46:3000/api/getAllDish');
+        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[selectedItemIndex]);
         setMealTypeDish(foundUser);
       } else {
         // Nếu không có mục nào được chọn, hiển thị dữ liệu mặc định (defaultSelectedItemIndex)
-        const response = await fetch('http://192.168.19.46:3000/api/getAllDish');
+        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[defaultSelectedItemIndex]);
         setMealTypeDish(foundUser);
@@ -161,210 +167,211 @@ const HomeScreen = ({ navigation }) => {
         />
       }
     >
-      <View style={styles.content}>
-        <View style={styles.container}>
-          <View >
-            <Text style={styles.textHeadList}>Trong tủ lạnh của bạn có gì?</Text>
-            <Text>Hãy chọn bữa ăn nào!</Text>
-          </View>
-          <View >
-          <FlatList
-            horizontal={true}
-            data={uniqueMealTypes}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                style={[
-                  styles.itemList,
-                  (selectedItemIndex === -1 && defaultSelectedItemIndex === index) || selectedItemIndex === index
-                    ? { backgroundColor: 'orange' }
-                    : null,
-                ]}
-                key={`item_${index}`}
-                onPress={() => {
-                  setSelectedItemIndex(index); // Đặt chỉ số của mục đã chọn vào trạng thái
-                }}
-              >
-                <Icon style={styles.icon} name={selectedItemIndex === index || (selectedItemIndex === -1 && defaultSelectedItemIndex === index)
-                  ? iconCheck
-                  : iconName}
-                  color={selectedItemIndex === index || (selectedItemIndex === -1 && defaultSelectedItemIndex === index)
-                    ? '#000'
-                    : '#888'} size={15} />
-                <Text style={styles.textList}>{item}</Text>
-              </TouchableOpacity>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} >
+      {
+        isLoading ? (<ActivityIndicator />) : (
+          <View>
+            <View style={styles.content}>
+              <View style={styles.container}>
+                <View >
+                  <Text style={styles.textHeadList}>Trong tủ lạnh của bạn có gì?</Text>
+                  <Text>Chọn đến 2 nguyên liệu</Text>
+                  <FlatList
+                    horizontal={true}
+                    data={uniqueMealTypes}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item, index }) => (
+                      <TouchableOpacity style={styles.itemList} key={`item_${index}`} onPress={() => navigation.navigate('SearchMeal', { items: item })}>
+                        <Icon style={styles.icon} name={iconCheck} color={'#000'} size={15} />
+                        <Text style={styles.textList}>{item}</Text>
+                      </TouchableOpacity >
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </View>
+                <View >
+                  <FlatList
+                    horizontal={true}
+                    data={uniqueFoodProcessingTypes}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item, index }) => (
+                      <TouchableOpacity style={styles.itemListCB} key={`item_${index}`} onPress={() => navigation.navigate('SearchProcessing', { items: item })}>
+                        <Text style={styles.textList}>{item}</Text>
 
-            {
-              mealTypeDish.map((Post, index) => (
-                <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết',
+                      </TouchableOpacity >
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+
+                  />
+                </View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} >
+
                   {
-                    id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
-                    Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
-                  })}>
+                    combinedData.map((Post, index) => (
+                      <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết',
+                        {
+                          id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
+                          Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
+                        })}>
 
-                  <View style={styles.headerPost}>
-                    <ImageBackground source={{ uri: Post.foodPhoto }} style={styles.postImage} imageStyle={{ borderTopLeftRadius: 15, borderTopRightRadius: 15, }}>
-                      <View style={styles.postHead}>
-                        {Post.user && Post.user.userImage && Post.user.userImage.trim() !== '' ? (
-                          <Image source={{ uri: Post.user.userImage }} style={styles.projectImage} />
+                        <View style={styles.headerPost}>
+                          <ImageBackground source={{ uri: Post.foodPhoto }} style={styles.postImage} imageStyle={{ borderTopLeftRadius: 15, borderTopRightRadius: 15, }}>
+                            <View style={styles.postHead}>
+                              {Post.user && Post.user.userImage && Post.user.userImage.trim() !== '' ? (
+                                <Image source={{ uri: Post.user.userImage }} style={styles.projectImage} />
+                              ) : (
+                                <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU' }} style={styles.projectImage} />
+                              )}
+                              <Text style={styles.text}>{Post.user && Post.user.name
+                                ? `${Post.user.name.lastname} ${Post.user.name.firstname}`
+                                : 'Unknown User'}</Text>
+                            </View>
+                            <Text style={styles.postText}>{Post.foodName}</Text>
+                          </ImageBackground>
+
+                        </View>
+                        <View>
+                          <View style={styles.interactiveContainer}>
+                            <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                              <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
+                              <Text style={styles.textButton}>Lưu</Text>
+                            </TouchableOpacity>
+                            <AirbnbRating
+                              count={5}
+                              reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
+                              defaultRating={Post.aveRating}
+                              size={14}
+                              showRating={false}
+                              isDisabled
+                            />
+                          </View>
+                        </View>
+
+                      </TouchableOpacity>
+
+                    ))
+
+                  }
+
+                </ScrollView>
+                <View>
+                  <TouchableOpacity style={styles.buttonSearch}>
+                    <Icon style={styles.icon} name={"search"} color={'#000'} size={15} />
+                    <Text>Gợi ý khác</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            <View style={styles.content}>
+              <View>
+                <Text style={styles.textHeadList}>Bạn đang thèm gì?</Text>
+                <Text>Không chắc? Tiếp tục tạo bất ngờ</Text>
+              </View>
+              <View style={styles.row}>
+                <FlatSL
+                  row={4}
+                  data={dsthucdon}
+                  columns={2}
+
+                />
+
+              </View>
+              <TouchableOpacity style={styles.buttonTBN}>
+                <Icon style={styles.icon} name={"search"} color={'#000'} size={15} />
+                <Text>Tạo bất ngờ cho tôi!</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.content}>
+              <View>
+                <Text style={styles.textHeadList}>Khám phá xem thứ gì đang trong mùa nào!</Text>
+
+                <View style={styles.row}>
+
+                  <FlatList
+                    data={dsthucdon}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item, index }) => (
+                      <TouchableOpacity style={styles.itemListDiscover} key={`item_${index}`}>
+                        <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
+                          <Text style={styles.textListThem}>{item.foodName}</Text>
+                        </ImageBackground>
+
+                        <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
+                      </TouchableOpacity >
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+
+                </View>
+
+                <TouchableOpacity style={styles.buttonTBN}>
+                  <Text>Xem tất cả nguyên liệu</Text>
+                </TouchableOpacity>
+
+              </View>
+
+            </View>
+            <View style={styles.content}>
+              <Text style={styles.textHeadList}>Món mới nhất</Text>
+
+              <FlatList
+                scrollEnabled={false}
+                data={combinedData}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
+                    {
+                      id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
+                      Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
+                      UserId: item.userId
+                    })}>
+
+                    <View style={styles.headerPostNew}>
+                      <Image source={{ uri: item.foodPhoto }} style={styles.postImageNew}>
+                      </Image>
+                      <View style={styles.postHeadNew}>
+                        {item.user && item.user.userImage && item.user.userImage.trim() !== '' ? (
+                          <Image source={{ uri: item.user.userImage }} style={styles.projectImage} />
                         ) : (
                           <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU' }} style={styles.projectImage} />
                         )}
-                        <Text style={styles.text}>{Post.user && Post.user.name
-                          ? `${Post.user.name.lastname} ${Post.user.name.firstname}`
+                        <Text style={styles.textNew}>{item.user && item.user.name
+                          ? `${item.user.name.lastname} ${item.user.name.firstname}`
                           : 'Unknown User'}</Text>
                       </View>
-                      <Text style={styles.postText}>{Post.foodName}</Text>
-                    </ImageBackground>
+                      <Text style={styles.postTextNew}>{item.foodName}</Text>
 
-                  </View>
-                  <View>
+                    </View>
+
+
                     <View style={styles.interactiveContainer}>
-                      <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                      <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(item._id)} >
                         <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
                         <Text style={styles.textButton}>Lưu</Text>
                       </TouchableOpacity>
                       <AirbnbRating
                         count={5}
                         reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
-                        defaultRating={Post.aveRating}
+                        defaultRating={item.aveRating}
                         size={14}
                         showRating={false}
                         isDisabled
                       />
                     </View>
-                  </View>
 
-                </TouchableOpacity>
 
-              ))
+                  </TouchableOpacity>
 
-            }
+                )}
 
-          </ScrollView>
-          <View>
-            <TouchableOpacity style={styles.buttonSearch}>
-              <Icon style={styles.icon} name={"search"} color={'#000'} size={15} />
-              <Text>Gợi ý khác</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      <View style={styles.content}>
-        <View>
-          <Text style={styles.textHeadList}>Bạn đang thèm gì?</Text>
-          <Text>Không chắc? Tiếp tục tạo bất ngờ</Text>
-        </View>
-        <View style={styles.row}>
-          <FlatSL
-            row={4}
-            data={dsthucdon}
-            columns={2}
-            toggleExerciseSelection={handleNavigate}
-          />
-
-        </View>
-        <TouchableOpacity style={styles.buttonTBN}>
-          <Icon style={styles.icon} name={"search"} color={'#000'} size={15} />
-          <Text>Tạo bất ngờ cho tôi!</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.content}>
-        <View>
-          <Text style={styles.textHeadList}>Khám phá xem thứ gì đang trong mùa nào!</Text>
-
-          <View style={styles.row}>
-
-            <FlatList
-              data={dsthucdon}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) => (
-
-                <TouchableOpacity key={`item_${index}`} style={styles.itemListDiscover} >
-
-                  <ImageBackground source={{ uri: item.foodPhoto }} style={styles.postImageThem} imageStyle={{ borderRadius: 15 }}>
-                    <Text style={styles.textListThem}>{item.foodName}</Text>
-                  </ImageBackground>
-
-                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
-                  
-                </TouchableOpacity >
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            />
-
+                numColumns={2}
+              />
+            </View>
           </View>
 
-          <TouchableOpacity style={styles.buttonTBN}>
-            <Text>Xem tất cả nguyên liệu</Text>
-          </TouchableOpacity>
-
-        </View>
-
-      </View>
-      <View style={styles.content}>
-        <Text style={styles.textHeadList}>Món mới nhất</Text>
-
-        <FlatList
-          scrollEnabled={false}
-          data={combinedData}
-          keyExtractor={(item, index) => index.toString()}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
-              {
-                id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
-                Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
-                UserId: item.userId
-              })}>
-
-              <View style={styles.headerPostNew}>
-                <Image source={{ uri: item.foodPhoto }} style={styles.postImageNew}>
-                </Image>
-                <View style={styles.postHeadNew}>
-                  {item.user && item.user.userImage && item.user.userImage.trim() !== '' ? (
-                    <Image source={{ uri: item.user.userImage }} style={styles.projectImage} />
-                  ) : (
-                    <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU' }} style={styles.projectImage} />
-                  )}
-                  <Text style={styles.textNew}>{item.user && item.user.name
-                    ? `${item.user.name.lastname} ${item.user.name.firstname}`
-                    : 'Unknown User'}</Text>
-                </View>
-                <Text style={styles.postTextNew}>{item.foodName}</Text>
-
-              </View>
-
-
-              <View style={styles.interactiveContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(item._id)} >
-                  <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
-                  <Text style={styles.textButton}>Lưu</Text>
-                </TouchableOpacity>
-                <AirbnbRating
-                  count={5}
-                  reviews={["Terrible", "Bad", "Meh", "OK", "Good", "Hmm...", "Very Good", "Wow", "Amazing", "Unbelievable", "Jesus"]}
-                  defaultRating={item.aveRating}
-                  size={14}
-                  showRating={false}
-                  isDisabled
-                />
-              </View>
-
-
-            </TouchableOpacity>
-
-          )}
-
-          numColumns={2}
-        />
-      </View>
+        )
+      }
     </ScrollView>
 
 

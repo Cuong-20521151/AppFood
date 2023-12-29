@@ -53,7 +53,7 @@ const AddDishes = ({ navigation }) => {
   ]
 
   const _submitData = () => {
-    fetch("http://192.168.19.46:3000/api/postDish", {
+    fetch("http://192.168.100.6:3000/api/postDish", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
