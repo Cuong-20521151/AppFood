@@ -18,7 +18,7 @@ const Search = ({ navigation }) => {
 
   const getapithucdon = async () => {
     try {
-      const response = await axios.get('http://192.168.100.6:3000/api/getAllDish');
+      const response = await axios.get('http://192.168.54.46:3000/api/getAllDish');
       getdstd(response.data);
     } catch (error) {
     }
@@ -31,7 +31,7 @@ const Search = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getUser');
+        'http://192.168.54.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -59,7 +59,7 @@ const Search = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.54.46:3000/api/postSaveDish', {
           food_id: postId,
           userId: userId,
         });

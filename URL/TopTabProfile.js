@@ -25,7 +25,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   };
   const getUser = async () => {
     try {
-      const res = await fetch('http://192.168.100.6:3000/api/getUser');
+      const res = await fetch('http://192.168.54.46:3000/api/getUser');
       const json = await res.json();
   
       // Kiểm tra và gán dữ liệu người dùng vào User nếu nó là một mảng
@@ -55,7 +55,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             User.map((userData) => (
               <View key={userData._id} style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image source={
-                  userData.userImage
+                  userData && userData.userImage
                   ? { uri: userData.userImage }
                   : { uri: 'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg' }} 
                   style={styles.logo} 
