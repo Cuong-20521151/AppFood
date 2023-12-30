@@ -18,6 +18,7 @@ import Signup from './signup';
 import TopTabProfile from '../URL/TopTabProfile';
 import UserDetails from './ProfileDetails';
 import BaiViet from '../screens/BaiViet';
+import UserInfo from '../screens/ProfilePage';
 const CustomHeader = ({ navigation, route }) => {
   return (
     <View style={{ height: 100, elevation: 1, borderBottomWidth: 0, paddingTop: 30,paddingLeft:10,flexDirection: 'row', alignItems: 'center'  }}>
@@ -54,6 +55,7 @@ function TopTab(){
       <St.Screen name="Cài đặt" component={ProAuthStack} options={{ headerShown: true }} />   
       <St.Screen name="Bài Viết" component={BaiViet} options={{ headerShown: true }}/>
       <St.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+      <St.Screen name="UserInfo" component={UserInfo} options={{ headerShown: true}} />
     </St.Navigator> 
   )
 };

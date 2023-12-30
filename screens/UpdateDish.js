@@ -62,7 +62,9 @@ const UpdateDishes = ({ navigation,route }) => {
   
 const updateData = async () => {
   try {
+
     const response = await fetch(`http://192.168.100.6:3000/api/update/`+route.params.id, {
+
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

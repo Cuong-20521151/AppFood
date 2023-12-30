@@ -21,6 +21,7 @@ const BaiViet = ({ navigation, route }) => {
   const [foodProcessing, setFoodProcessing] = useState(initialfoodProcessing)
   const [foodIngredients, setFoodIngredients] = useState(initialfoodIngredients)
   const [cookingTime, setCookingTime] = useState(initialcookingTime)
+  const [UserId, setUserId] = useState(initialuserId)
   const [feel, setFeel] = useState(initialfeel)
   const [foodRations, setFoodRations] = useState(initialfoodRations)
   const [dsuser, getuser] = useState([]);
@@ -38,6 +39,7 @@ const BaiViet = ({ navigation, route }) => {
   const _submitCmt = () => {
     if (isAuthenticated) {
       // UserId đã được xác thực, thực hiện gửi comment
+
       fetch("http://192.168.100.6:3000/api/postCmt", {
         method: 'POST',
         headers: {
@@ -65,7 +67,9 @@ const BaiViet = ({ navigation, route }) => {
   const _submitRating = (rating) => {
     if (isAuthenticated && rating !== undefined) {
       // UserId đã được xác thực, thực hiện gửi comment
+
       fetch("http://192.168.100.6:3000/api/postRating", {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -92,7 +96,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdscomment = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getAllCmt');
+        'http://192.168.54.46:3000/api/getAllCmt');
       const filteredComments = response.data.filter(comment => comment.food_id === route.params.id);
       getdscmt(filteredComments);
     } catch (error) {
@@ -132,7 +136,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getUser');
+        'http://192.168.54.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -146,7 +150,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdsrating = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getAllRating');
+        'http://192.168.54.46:3000/api/getAllRating');
       getrating(response.data);
     } catch (error) {
       // handle err
@@ -234,6 +238,7 @@ const BaiViet = ({ navigation, route }) => {
 
   const updateAveRating = async (newAverageRating) => {
     try {
+
       const response = await fetch(`http://192.168.100.6:3000/api/updateAveRating/` + route.params.id, {
         method: 'PATCH',
         headers: {
@@ -258,7 +263,9 @@ const BaiViet = ({ navigation, route }) => {
   const handleSaveDish = async () => {
     if (isAuthenticated) {
       try {
+
         const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
+
           food_id: route.params.id,
           userId: userId,
         });
@@ -276,7 +283,9 @@ const BaiViet = ({ navigation, route }) => {
       // Hiển thị thông báo yêu cầu đăng nhập nếu cần
     }
   };
-
+  const handleUserPress = (UserId) => {
+    navigation.navigate('UserInfo', { UserId: UserId }); // Chuyển hướng đến màn hình UserInfo và truyền userId
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
@@ -291,7 +300,9 @@ const BaiViet = ({ navigation, route }) => {
                 ) : (
                   <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
                 )}
-                <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
+                <TouchableOpacity onPress={() => handleUserPress(UserId)}>
+                  <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -312,11 +323,7 @@ const BaiViet = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.horizontalLine}></View>
-        <View>
-          <View>
-            <Text style={styles.textH3}>Thông tin người dùng</Text>
-          </View>
-        </View>
+        
         <View style={styles.horizontalLine}></View>
         <View>
           <View style={styles.headCooksnap}>
@@ -409,9 +416,7 @@ const BaiViet = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.horizontalLine}></View>
-        <View>
-          <Text style={styles.textH3}>Món mới của Meo</Text>
-        </View>
+        
       </View>
     </ScrollView>
   );

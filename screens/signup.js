@@ -11,27 +11,30 @@ import { Ionicons } from '@expo/vector-icons';
 import CustomTextInput from "../components/CustomInputText";
 
 const Signup = ({ navigation }) => {
-  
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
 
   const handleSignUp = async () => {
     try {
-      if ( !username || !password || !confPassword) {
-        Alert.alert("Làm phiền bạn điền đủ các trường!");
+      if (!username || !password || !confPassword || !firstname || !lastname) {
+        Alert.alert("Vui lòng điền đầy đủ thông tin.");
         return;
       }
+  
       if (password !== confPassword) {
-        Alert.alert("Passwords do not match.");
-
+        Alert.alert("Mật khẩu không trùng khớp.");
         return;
       }
+
       // Additional password strength checks can be added here
 
       const response = await fetch("http://192.168.100.6:3000/api/Signup", {
 
       // Additional password strength checks can be added here
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,11 +42,13 @@ const Signup = ({ navigation }) => {
         body: JSON.stringify({
           username: username,
           password: password,
+          firstname: firstname,
+          lastname: lastname,
         }),
       });
-
+  
       const responseData = await response.json();
-
+  
       if (response.ok) {
         Alert.alert("Chúc mừng! Bạn đã đăng ký thành công.");
         navigation.navigate("Login");
@@ -79,6 +84,19 @@ const Signup = ({ navigation }) => {
         <Text style={styles.appName}>Create New Account</Text>
       </View>
       <View style={styles.content}>
+
+        <CustomTextInput
+          name="user"
+          placeholder="Firstname"
+          value={firstname}
+          onChangeText={(text) => setFirstname(text)}
+        />
+        <CustomTextInput
+          name="user"
+          placeholder="Lastname"
+          value={lastname}
+          onChangeText={(text) => setLastname(text)}
+        />
         
         <CustomTextInput
           name="user"
