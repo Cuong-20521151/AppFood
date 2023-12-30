@@ -29,7 +29,9 @@ const HomeScreen = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.54.46:3000/api/getAllDish');
+
+        'http://192.168.100.6:3000/api/getAllDish');
+
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -66,7 +68,9 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.54.46:3000/api/getUser');
+
+        'http://192.168.100.6:3000/api/getUser');
+
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -97,13 +101,17 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchMealTypeDish = async () => {
       if (selectedItemIndex !== -1) {
-        const response = await fetch('http://192.168.54.46:3000/api/getAllDish');
+
+        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[selectedItemIndex]);
         setMealTypeDish(foundUser);
       } else {
         // Nếu không có mục nào được chọn, hiển thị dữ liệu mặc định (defaultSelectedItemIndex)
-        const response = await fetch('http://192.168.54.46:3000/api/getAllDish');
+
+        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[defaultSelectedItemIndex]);
         setMealTypeDish(foundUser);
@@ -211,6 +219,7 @@ const HomeScreen = ({ navigation }) => {
                         {
                           id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
                           Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations, UserId: Post.userId,
+
                         })}>
 
                         <View style={styles.headerPost}>
@@ -253,6 +262,7 @@ const HomeScreen = ({ navigation }) => {
                   }
 
                 </ScrollView>
+
               </View>
             </View>
             <View style={styles.content}>
@@ -266,6 +276,7 @@ const HomeScreen = ({ navigation }) => {
                   data={dsthucdon}
                   columns={2}
                   toggleExerciseSelection={handleNavigate}
+
                 />
 
               </View>
@@ -290,15 +301,15 @@ const HomeScreen = ({ navigation }) => {
                           <Text style={styles.textListThem}>{item.foodName}</Text>
                         </ImageBackground>
 
+
                         <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
+
                       </TouchableOpacity >
                     )}
                     keyExtractor={(item, index) => index.toString()}
                   />
 
                 </View>
-
-                
 
               </View>
 
@@ -351,6 +362,7 @@ const HomeScreen = ({ navigation }) => {
                         isDisabled
                       />
                     </View>
+
 
 
                   </TouchableOpacity>

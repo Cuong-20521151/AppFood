@@ -29,7 +29,6 @@ function StackHome() {
       screenOptions={{
         headerStyle: {
           height: 100, // Margin top cho header
-
         },
         headerShown: true,
       }}
@@ -44,6 +43,7 @@ function StackHome() {
       <Stack.Screen name="SearchProcessing" component={SearchProcessing} options={{ headerShown: false }} />
       <Stack.Screen name="LoSign" component={LoSign} options={{ headerShown: false }} />
       <Stack.Screen name="UserInfo" component={UserInfo} options={{ headerShown: true}} />
+
     </Stack.Navigator>
 
   );

@@ -28,8 +28,13 @@ const Signup = ({ navigation }) => {
         Alert.alert("Mật khẩu không trùng khớp.");
         return;
       }
-  
-      const response = await fetch("http://192.168.54.46:3000/api/Signup", {
+
+      // Additional password strength checks can be added here
+
+      const response = await fetch("http://192.168.100.6:3000/api/Signup", {
+
+      // Additional password strength checks can be added here
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -52,12 +52,13 @@ const UserInfo = ({ navigation,route }) => {
       }
 
       try {
-          // Nếu đã đăng nhập, thực hiện hành động Flow
-          const response = await axios.post('http://192.168.54.46:3000/api/flows', {
-              user_flow: UserId,
-              userId: userId,
-          });
-          console.log('Flow successful:', response.data);
+
+        const userResponse = await axios.get(`http://192.168.100.6:3000/api/user-info/`+userId);
+        const { user, userPostsCount } = userResponse.data;
+        setUserInfo(user);
+        setUserPostsCount(userPostsCount);
+        setLoading(false);
+
       } catch (error) {
           console.error('Error flowing:', error);
       }
