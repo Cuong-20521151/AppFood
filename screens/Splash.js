@@ -13,7 +13,9 @@ const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Hiển thị hình ảnh hoặc logo của Splash Screen */}
-      <Image source={{uri:'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg'}} style={styles.logo} />
+      <View style={styles.logoContainer}>
+        <Image source={require('../assets/Screenshot2023-12-30120605.png')} style={styles.logo} />
+      </View>
     </View>
   );
 };
@@ -23,11 +25,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFCC99', // Màu cam nhạt
   },
-  logo: {
+  logoContainer: {
     width: 200,
     height: 200,
+    borderRadius: 100, // Làm tròn hình ảnh
+    overflow: 'hidden', // Ẩn các phần tử vượt quá phạm vi của container
+    backgroundColor: '#FFFFFF', // Màu nền trắng cho hình tròn
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
   },
 });
