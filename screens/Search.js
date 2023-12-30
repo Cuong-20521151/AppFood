@@ -124,6 +124,21 @@ const Search = ({ navigation }) => {
     }
   }
 
+  const handleNavigate = (data) => {
+    // Xử lý việc chuyển đến trang khác với dữ liệu `data`
+    navigation.navigate('Bài Viết', {
+      id: data.id,
+      name: data.name,
+      Photo: data.Photo,
+      Processing: data.Processing,
+      Ingredients: data.Ingredients,
+      Time: data.Time,
+      Feel: data.Feel,
+      FoodRations: data.FoodRations,
+      UserId: data.UserId,
+    });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.search}>
@@ -157,7 +172,7 @@ const Search = ({ navigation }) => {
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
 
-                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
+                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate}/>
                 </TouchableOpacity >
               )}
               keyExtractor={(item, index) => index.toString()}

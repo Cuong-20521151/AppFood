@@ -51,9 +51,21 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       <View style={styles.Head}>
       
         <View style={styles.HeadUser}>
-          
+          {Array.isArray(User) && User.length > 0 ? (
+            User.map((userData) => (
+              <View key={userData._id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image source={
+                  userData.userImage
+                  ? { uri: userData.userImage }
+                  : { uri: 'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg' }} 
+                  style={styles.logo} 
+                />
+                <Text>{userData.username}</Text>
+              </View>
+            ))
+          ) : (
             <Text>Loading...</Text>
-          
+          )}
         </View>
         <View style={styles.HeadIcon}>
           <TouchableOpacity onPress={()=>navigation.navigate("Cài đặt")}>
