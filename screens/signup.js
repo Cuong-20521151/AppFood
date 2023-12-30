@@ -7,37 +7,40 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
+
 import CustomTextInput from "../components/CustomInputText";
 
 const Signup = ({ navigation }) => {
-  
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [confPassword, setConfPassword] = useState("");
 
   const handleSignUp = async () => {
     try {
-      if ( !username || !password || !confPassword) {
-        Alert.alert("Làm phiền bạn điền đủ các trường!");
+      if (!firstName || !username || !email || !password || !confPassword) {
+        Alert.alert("Please fill in all fields.");
         return;
       }
       if (password !== confPassword) {
         Alert.alert("Passwords do not match.");
-
         return;
       }
+
       // Additional password strength checks can be added here
 
       const response = await fetch("http://192.168.100.6:3000/api/Signup", {
-
-      // Additional password strength checks can be added here
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          firstname: firstName,
+          lastname: lastName,
           username: username,
+          email: email, // Include email field in the request body
           password: password,
         }),
       });
@@ -45,14 +48,14 @@ const Signup = ({ navigation }) => {
       const responseData = await response.json();
 
       if (response.ok) {
-        Alert.alert("Chúc mừng! Bạn đã đăng ký thành công.");
+        Alert.alert("Congratulations! You have successfully signed up.");
         navigation.navigate("Login");
       } else {
-        Alert.alert("Đăng ký thất bại. Vui lòng thử lại sau.");
+        Alert.alert("Signup failed. Please try again later.");
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      Alert.alert("Đã xảy ra lỗi trong quá trình đăng ký.");
+      Alert.alert("An error occurred during signup.");
     }
   };
 
@@ -62,24 +65,35 @@ const Signup = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={styles.closeButton}
-      >
-        <Ionicons style={styles.icon} name = {"arrow-back"} color = {'#000'} size = {25}/>
-      </TouchableOpacity>
       <View style={styles.appContainer}>
         <Image
           source={{
             uri:
-              "https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg",
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU",
           }}
           style={styles.logo}
         />
         <Text style={styles.appName}>Create New Account</Text>
       </View>
       <View style={styles.content}>
-        
+        <CustomTextInput
+          name="user"
+          placeholder="Enter Firstname"
+          value={firstName}
+          onChangeText={(text) => setFirstName(text)}
+        />
+        <CustomTextInput
+          name="user"
+          placeholder="Enter Lastname"
+          value={lastName}
+          onChangeText={(text) => setLastName(text)}
+        />
+        <CustomTextInput
+          name="mail"
+          placeholder="Enter Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+        />
         <CustomTextInput
           name="user"
           placeholder="Username"
@@ -174,13 +188,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    backgroundColor: 'transparent', // Để nút không có màu nền
-    zIndex: 1, // Để nút luôn nằm trên các thành phần khác
   },
 });
 
