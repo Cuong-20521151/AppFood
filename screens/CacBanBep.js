@@ -14,7 +14,7 @@ import FlatSL from '../components/FlastSL';
 
 const CacBanBep = ({navigation}) => {
     const { userId, isAuthenticated } = useAuth();
-    const [savedPosts, setSavedPosts] = useState([]);
+    const [flowPosts, setFlowPosts] = useState([]);
     const [Dish, setDish] = useState([]);
     const [userInfo, setUserInfo] = useState([]);
     //lấy user_flow từ userId
@@ -22,7 +22,7 @@ const CacBanBep = ({navigation}) => {
       const fetchSavedPosts = async () => {
           try {
               const response = await axios.get(`http://192.168.54.46:3000/api/getFlows/` + userId);
-              setSavedPosts(response.data.savedPosts);
+              setFlowPosts(response.data.flowPosts);
               console.log(response.data);
           } catch (error) {
               console.error('Error fetching saved posts:', error);
@@ -47,7 +47,7 @@ const CacBanBep = ({navigation}) => {
     useEffect(() => {
       const fetchData = async () => {
         const temp = [];
-        for (const post of savedPosts) {
+        for (const post of flowPosts) {
           const data = await fetchPostsByFoodId(post.user_flow);
           temp.push(...data);
         }
@@ -58,7 +58,7 @@ const CacBanBep = ({navigation}) => {
         setDish(latestPost);
       };
       fetchData();
-    }, [savedPosts]); // Update Dish khi savedPosts thay đổi
+    }, [flowPosts]); // Update Dish khi flowPosts thay đổi
 
     const fetchUserFlowInfo = async (userFlowId) => {
       try {
@@ -75,7 +75,7 @@ const CacBanBep = ({navigation}) => {
     useEffect(() => {
       const fetchData = async () => {
         const temp = [];
-        for (const post of savedPosts) {
+        for (const post of flowPosts) {
           const userFlowInfo = await fetchUserFlowInfo(post.user_flow);
           temp.push(userFlowInfo);
         }
@@ -86,7 +86,7 @@ const CacBanBep = ({navigation}) => {
       };
       
       fetchData();
-    }, [savedPosts]);
+    }, [flowPosts]);
 
     const handleNavigate = (data) => {
         // Xử lý việc chuyển đến trang khác với dữ liệu `data`
@@ -109,7 +109,11 @@ const CacBanBep = ({navigation}) => {
     <ScrollView style={styles.main}>
       {isAuthenticated ? ( // Kiểm tra nếu đã đăng nhập
         
-        <FlatSL row={Dish.length} data={Dish} toggleExerciseSelection={handleNavigate} />
+        Dish.length > 0 ? ( // Kiểm tra nếu Dish có dữ liệu
+          <FlatSL row={Dish.length} data={Dish} toggleExerciseSelection={handleNavigate} />
+        ) : (
+          <Button onPress={handleHome} title="Trở lại Kho Cảm Hứng"></Button>
+        )
       ) : (
         <Button onPress={handleHome} title="Trở lại Kho Cảm Hứng"></Button>
       )}
