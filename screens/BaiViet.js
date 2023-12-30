@@ -330,11 +330,7 @@ const BaiViet = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.horizontalLine}></View>
-        <View>
-          <View>
-            <Text style={styles.textH3}>Thông tin người dùng</Text>
-          </View>
-        </View>
+        
         <View style={styles.horizontalLine}></View>
         <View>
           <View style={styles.headCooksnap}>
@@ -418,9 +414,7 @@ const BaiViet = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.horizontalLine}></View>
-        <View>
-          <Text style={styles.textH3}>Món mới của </Text>
-        </View>
+        
       </View>
     </ScrollView>
   );
