@@ -22,7 +22,6 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    navigation.navigate("HomeSrc")
   };
   const getUser = async () => {
     try {
