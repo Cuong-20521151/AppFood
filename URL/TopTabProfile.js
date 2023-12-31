@@ -16,6 +16,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   const {userId, setIsAuthenticated} = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [User, setUser] = useState([]);
+  console.log(userId)
   const handleMenuToggle = () => {
     setIsMenuVisible(!isMenuVisible);
   };
@@ -25,7 +26,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   };
   const getUser = async () => {
     try {
-      const res = await fetch('http://192.168.100.6:3000/api/getUser');
+      const res = await fetch('http://192.168.88.128:3000/api/getUser');
       const json = await res.json();
   
       // Kiểm tra và gán dữ liệu người dùng vào User nếu nó là một mảng
@@ -50,7 +51,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     <View style={styles.tabBar}>
       <View style={styles.Head}>
       
-        <View style={styles.HeadUser}>
+        {/* <View style={styles.HeadUser}>
           {Array.isArray(User) && User.length > 0 ? (
             User.map((userData) => (
               <View key={userData._id} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -66,7 +67,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           ) : (
             <Text>Loading...</Text>
           )}
-        </View>
+        </View> */}
         <View style={styles.HeadIcon}>
           <TouchableOpacity onPress={()=>navigation.navigate("Cài đặt")}>
             <Icon name={"settings"} size={25} color={"#000"}/>

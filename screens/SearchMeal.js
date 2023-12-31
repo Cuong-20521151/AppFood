@@ -17,7 +17,7 @@ const SearchMeal = ({ navigation, route }) => {
   const getapithucdon = async () => {
     try {
 
-      const response = await axios.get('http://192.168.100.6:3000/api/getAllDish');
+      const response = await axios.get('http://192.168.88.128:3000/api/getAllDish');
 
       getdstd(response.data);
     } catch (error) {
@@ -46,7 +46,7 @@ const SearchMeal = ({ navigation, route }) => {
     try {
       const response = await axios.get(
 
-        'http://192.168.100.6:3000/api/getUser');
+        'http://192.168.88.128:3000/api/getUser');
 
       getuser(response.data);
     } catch (error) {
@@ -76,7 +76,7 @@ const SearchMeal = ({ navigation, route }) => {
     if (isAuthenticated) {
       try {
 
-        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
 
           food_id: postId,
           userId: userId,
@@ -102,7 +102,7 @@ const SearchMeal = ({ navigation, route }) => {
     }
     if (item.foodName.toLowerCase().includes(searchInput.toLowerCase())) {
       return (
-        <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
+        <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
           {
             id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
             Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
@@ -151,13 +151,12 @@ const SearchMeal = ({ navigation, route }) => {
         />
       </View>
       <FlatList
-        style={styles.myFood}
-        scrollEnabled={false}
-        data={combinedData}
-        renderItem={({ item, index }) => filterData(item)}
-        keyExtractor={(item, index) => index.toString()} 
-
-        numColumns={2}
+         style={styles.myFood}
+         scrollEnabled={false}
+         data={combinedData}
+         renderItem={({ item})  => filterData(item)}
+         keyExtractor={(item) => item._id}
+         numColumns={2}
       />
       <View style={styles.content}>
         <View>
