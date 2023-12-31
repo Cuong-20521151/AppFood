@@ -29,7 +29,9 @@ const HomeScreen = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getAllDish');
+
+        'http://192.168.88.128:3000/api/getAllDish');
+
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -66,7 +68,9 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.100.6:3000/api/getUser');
+
+        'http://192.168.88.128:3000/api/getUser');
+
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -97,13 +101,17 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchMealTypeDish = async () => {
       if (selectedItemIndex !== -1) {
-        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+
+        const response = await fetch('http://192.168.88.128:3000/api/getAllDish');
+
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[selectedItemIndex]);
         setMealTypeDish(foundUser);
       } else {
         // Nếu không có mục nào được chọn, hiển thị dữ liệu mặc định (defaultSelectedItemIndex)
-        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+
+        const response = await fetch('http://192.168.88.128:3000/api/getAllDish');
+
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[defaultSelectedItemIndex]);
         setMealTypeDish(foundUser);
@@ -125,7 +133,7 @@ const HomeScreen = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.100.6:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
           food_id: postId,
           userId: userId,
         });
@@ -210,7 +218,8 @@ const HomeScreen = ({ navigation }) => {
                       <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết',
                         {
                           id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
-                          Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
+                          Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations, UserId: Post.userId,
+
                         })}>
 
                         <View style={styles.headerPost}>
@@ -253,12 +262,7 @@ const HomeScreen = ({ navigation }) => {
                   }
 
                 </ScrollView>
-                <View>
-                  <TouchableOpacity style={styles.buttonSearch}>
-                    <Icon style={styles.icon} name={"search"} color={'#000'} size={15} />
-                    <Text>Gợi ý khác</Text>
-                  </TouchableOpacity>
-                </View>
+
               </View>
             </View>
             <View style={styles.content}>
@@ -271,6 +275,7 @@ const HomeScreen = ({ navigation }) => {
                   row={4}
                   data={dsthucdon}
                   columns={2}
+                  toggleExerciseSelection={handleNavigate}
 
                 />
 
@@ -296,17 +301,15 @@ const HomeScreen = ({ navigation }) => {
                           <Text style={styles.textListThem}>{item.foodName}</Text>
                         </ImageBackground>
 
-                        <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
+
+                        <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
+
                       </TouchableOpacity >
                     )}
                     keyExtractor={(item, index) => index.toString()}
                   />
 
                 </View>
-
-                <TouchableOpacity style={styles.buttonTBN}>
-                  <Text>Xem tất cả nguyên liệu</Text>
-                </TouchableOpacity>
 
               </View>
 
@@ -359,6 +362,7 @@ const HomeScreen = ({ navigation }) => {
                         isDisabled
                       />
                     </View>
+
 
 
                   </TouchableOpacity>

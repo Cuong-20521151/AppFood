@@ -17,7 +17,7 @@ const Login = ({navigation}) => {
   
   const handleLogin = async () => {
     
-    fetch('http://192.168.19.46:3000/api/getUser')
+    fetch('http://192.168.88.128:3000/api/getUser')
       .then((res) => res.json())
       .then((json) => {
         const foundUser = json.find(user => user.username === username && user.password === password);
@@ -92,7 +92,7 @@ const Login = ({navigation}) => {
         <View style={styles.mxh}>
           <Image source={{uri:'https://anh.eva.vn/upload/4-2016/images/2016-11-30/1480494815-facebook-sao-viet.png'}}
           style={styles.Image_mxh}/>
-          <Image source={{uri:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/2048px-Google_%22G%22_Logo.svg.png'}}
+          <Image source={{uri:'https://img.idesign.vn/2023/02/idesign_logogg_1.jpg'}}
           style={styles.Image_mxh}/>
         </View>
         <View style={styles.sigup}>

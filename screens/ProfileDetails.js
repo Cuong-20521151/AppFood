@@ -26,7 +26,9 @@ const UserDetails = ({ navigation, route }) => {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://192.168.100.6:3000/api/updateUser/${Users._id}`, {
+
+      const response = await fetch(`http://192.168.88.128:3000/api/updateUser/${Users._id}`, {
+
         method: 'PATCH', // or 'PATCH' depending on your API
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +110,7 @@ const UserDetails = ({ navigation, route }) => {
       <TouchableOpacity style={styles.upload_image} mode="contained"
           onPress={() => _uploadImage()}>
           <Icon name={userImage == "" ? upload : checkmark} size={50}></Icon>
-          <Text>Chọn ảnh</Text>
+          <Text>Chọn ảnh đại diện</Text>
           {userImage !== "" && (
           <Image source={{ uri: userImage }} style={styles.image} />
           )}
@@ -185,6 +187,7 @@ const styles = StyleSheet.create({
   image: {
     height: 100,
     width: 100,
+    borderRadius:50,
   },
 });
 

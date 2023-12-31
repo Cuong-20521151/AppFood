@@ -6,6 +6,8 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 const upload = 'cloud-upload';
 const checkmark = 'checkmark';
+const images_sharp = 'images-sharp';
+const camera_outline = 'camera-outline';
 import MyDropDownPicker from '../components/dropdown'
 
 const UpdateDishes = ({ navigation,route }) => {
@@ -30,6 +32,7 @@ const UpdateDishes = ({ navigation,route }) => {
     const [currentValue2, setCurrentValue2] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [currentValue, setCurrentValue] = useState([]);
+    const [showImageOptions, setShowImageOptions] = useState(false);
 
     const items1 = [
       { label: 'Sáng', value: 'Sáng' },
@@ -62,7 +65,9 @@ const UpdateDishes = ({ navigation,route }) => {
   
 const updateData = async () => {
   try {
-    const response = await fetch(`http://192.168.100.6:3000/api/update/`+route.params.id, {
+
+    const response = await fetch(`http://192.168.88.128:3000/api/update/`+route.params.id, {
+
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -139,6 +144,14 @@ const updateData = async () => {
     // Thiết lập độ cao của TextInput dựa trên chiều cao nội dung mới
     setInputHeight(contentHeight);
   };
+
+  const _openImageOptions = () => {
+    setShowImageOptions(true);
+  };
+
+  const _closeImageOptions = () => {
+    setShowImageOptions(false);
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -152,14 +165,47 @@ const updateData = async () => {
         </View>
       </View>
       <View style={styles.introduce}>
-        <TouchableOpacity style={styles.upload_image} mode="contained"
+        {/* <TouchableOpacity style={styles.upload_image} mode="contained"
           onPress={() => _uploadImage()}>
           <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
           <Text>Chọn ảnh</Text>
           {foodPhoto !== "" && (
           <Image source={{ uri: foodPhoto }} style={styles.image} />
           )}
+        </TouchableOpacity> */}
+        <TouchableOpacity style={styles.upload_image} mode="contained" onPress={_openImageOptions}>
+          <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
+          <Text style={styles.text_upload}>Đổi ảnh</Text>
+          {foodPhoto !== "" && (
+              <Image source={{ uri: foodPhoto }} style={styles.image} />
+            )}
         </TouchableOpacity>
+        {showImageOptions && (
+          <View style={styles.upload_cl}>
+            <TouchableOpacity
+              style={styles.upload_cl1}
+              mode="contained"
+              onPress={() => {
+                _uploadImage();
+                _closeImageOptions();
+              }}
+            >
+              <Icon name={images_sharp} size={25}></Icon>
+              <Text style={styles.text_upload_cl1}>Thư viện</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.upload_cl1}
+              mode="contained"
+              onPress={() => {
+                _takePhoto();
+                _closeImageOptions();
+              }}
+            >
+              <Icon name={camera_outline} size={25}></Icon>
+              <Text style={styles.text_upload_cl1}>Máy ảnh</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <TextInput placeholder='Tên món ăn' style={styles.input_name} onChangeText={text => setFoodName(text)} >
           {foodName}
@@ -275,8 +321,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    height: 100,
-    width: 100,
+    height: 200,
+    width: 340,
+    borderRadius:20,
+  },
+  text_upload:{
+    fontSize:20,
+    paddingBottom:4,
+    paddingTop:4,
+    paddingLeft:6,
+    paddingRight:6,
+    marginBottom:10,
+    borderRadius:6,
+    backgroundColor:'#A2CD5A'
+  },
+  upload_cl:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    marginLeft:70,
+    marginRight:70,
+    marginTop:20,
+    marginBottom:20,
+  },
+  upload_cl1:{
+    flexDirection:'row',
+    backgroundColor:'#A2CD5A',
+    paddingLeft:8,
+    paddingTop:3,
+    paddingRight:8,
+    paddingBottom:3,
+    borderRadius:6,
+  },
+  text_upload_cl1:{
+    paddingLeft:5,
+    paddingTop:4,
+    fontSize:16,
   },
   input_name: {
     backgroundColor: '#A2CD5A',

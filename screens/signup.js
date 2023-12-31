@@ -24,6 +24,7 @@ const Signup = ({ navigation }) => {
         Alert.alert("Please fill in all fields.");
         return;
       }
+  
       if (password !== confPassword) {
         Alert.alert("Passwords do not match.");
         return;
@@ -31,7 +32,7 @@ const Signup = ({ navigation }) => {
 
       // Additional password strength checks can be added here
 
-      const response = await fetch("http://192.168.100.6:3000/api/Signup", {
+      const response = await fetch("http://192.168.88.128:3000/api/Signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,17 +45,17 @@ const Signup = ({ navigation }) => {
           password: password,
         }),
       });
-
+  
       const responseData = await response.json();
-
+  
       if (response.ok) {
-        Alert.alert("Congratulations! You have successfully signed up.");
+        Alert.alert("Chúc mừng! Bạn đã đăng ký thành công.");
         navigation.navigate("Login");
       } else {
-        Alert.alert("Signup failed. Please try again later.");
+        Alert.alert("Đăng ký thât bại. Vui lòng thử lại sau.");
       }
     } catch (error) {
-      console.error("Error signing up:", error);
+      console.error("Lỗi đăng ký:", error);
       Alert.alert("An error occurred during signup.");
     }
   };
