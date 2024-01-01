@@ -1,6 +1,6 @@
 //import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ImageBackground, Button, FlatList, TextInput, RefreshControl, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ImageBackground, Button, FlatList, TextInput, RefreshControl, ActivityIndicator,Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FlatSL from '../components/FlastSL';
 import { AirbnbRating } from 'react-native-ratings';
@@ -29,7 +29,9 @@ const HomeScreen = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.54.46:3000/api/getAllDish');
+
+        'http://192.168.133.46:3000/api/getAllDish');
+
       getdstd(response.data);
     } catch (error) {
       // handle err
@@ -66,7 +68,9 @@ const HomeScreen = ({ navigation }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.54.46:3000/api/getUser');
+
+        'http://192.168.133.46:3000/api/getUser');
+
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -97,13 +101,17 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchMealTypeDish = async () => {
       if (selectedItemIndex !== -1) {
-        const response = await fetch('http://192.168.54.46:3000/api/getAllDish');
+
+        const response = await fetch('http://192.168.133.46:3000/api/getAllDish');
+
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[selectedItemIndex]);
         setMealTypeDish(foundUser);
       } else {
         // Nếu không có mục nào được chọn, hiển thị dữ liệu mặc định (defaultSelectedItemIndex)
-        const response = await fetch('http://192.168.54.46:3000/api/getAllDish');
+
+        const response = await fetch('http://192.168.133.46:3000/api/getAllDish');
+
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[defaultSelectedItemIndex]);
         setMealTypeDish(foundUser);
@@ -122,27 +130,35 @@ const HomeScreen = ({ navigation }) => {
     }, []);
   
   
-  const handleSaveDish = async (postId) => {
-    if (isAuthenticated) {
-      try {
-        const response = await axios.post('http://192.168.54.46:3000/api/postSaveDish', {
-          food_id: postId,
-          userId: userId,
-        });
-        console.log('Trạng thái lưu:', response.data);
-        // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
-        // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
-        setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
-      } catch (error) {
-        console.error('Lỗi khi lưu bài viết:', error.message);
-        // Xử lý thông báo lỗi nếu cần
+    const handleSaveDish = async (postId, postUserId) => {
+      if (isAuthenticated) {
+        // Kiểm tra nếu userId của người đăng nhập khác với userId của bài viết
+        if (userId !== postUserId) {
+          try {
+            const response = await axios.post('http://192.168.133.46:3000/api/postSaveDish', {
+              food_id: postId,
+              userId: userId,
+            });
+            console.log('Trạng thái lưu:', response.data);
+            // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
+            // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+            setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
+          } catch (error) {
+            console.error('Lỗi khi lưu bài viết:', error.message);
+            // Xử lý thông báo lỗi nếu cần
+          }
+        } else {
+          // Người dùng đang cố gắng lưu bài viết của chính họ
+          console.log('Không thể lưu bài viết của chính bạn');
+          Alert.alert('Không thể lưu bài viết của chính bạn');
+          // Hiển thị thông báo hoặc thực hiện hành động phù hợp
+        }
+      } else {
+        // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
+        navigation.navigate('LoSign');
+        // Hiển thị thông báo yêu cầu đăng nhập nếu cần
       }
-    } else {
-      // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
-      navigation.navigate('LoSign');
-      // Hiển thị thông báo yêu cầu đăng nhập nếu cần
-    }
-  };
+    };
   const handleNavigate = (data) => {
     // Xử lý việc chuyển đến trang khác với dữ liệu `data`
     navigation.navigate('Bài Viết', {
@@ -210,7 +226,8 @@ const HomeScreen = ({ navigation }) => {
                       <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết',
                         {
                           id: Post._id, name: Post.foodName, Photo: Post.foodPhoto, Processing: Post.foodProcessing,
-                          Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations
+                          Ingredients: Post.foodIngredients, Time: Post.cookingTime, Feel: Post.feel, FoodRations: Post.foodRations, UserId: Post.userId,
+
                         })}>
 
                         <View style={styles.headerPost}>
@@ -231,7 +248,7 @@ const HomeScreen = ({ navigation }) => {
                         </View>
                         <View>
                           <View style={styles.interactiveContainer}>
-                            <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id)} >
+                            <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(Post._id,Post.userId)} >
                               <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
                               <Text style={styles.textButton}>Lưu</Text>
                             </TouchableOpacity>
@@ -253,12 +270,7 @@ const HomeScreen = ({ navigation }) => {
                   }
 
                 </ScrollView>
-                <View>
-                  <TouchableOpacity style={styles.buttonSearch}>
-                    <Icon style={styles.icon} name={"search"} color={'#000'} size={15} />
-                    <Text>Gợi ý khác</Text>
-                  </TouchableOpacity>
-                </View>
+
               </View>
             </View>
             <View style={styles.content}>
@@ -271,6 +283,7 @@ const HomeScreen = ({ navigation }) => {
                   row={4}
                   data={dsthucdon}
                   columns={2}
+                  toggleExerciseSelection={handleNavigate}
 
                 />
 
@@ -296,17 +309,15 @@ const HomeScreen = ({ navigation }) => {
                           <Text style={styles.textListThem}>{item.foodName}</Text>
                         </ImageBackground>
 
-                        <FlatSL row={"3"} data={dsthucdon} columns={"3"} />
+
+                        <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
+
                       </TouchableOpacity >
                     )}
                     keyExtractor={(item, index) => index.toString()}
                   />
 
                 </View>
-
-                <TouchableOpacity style={styles.buttonTBN}>
-                  <Text>Xem tất cả nguyên liệu</Text>
-                </TouchableOpacity>
 
               </View>
 
@@ -346,7 +357,7 @@ const HomeScreen = ({ navigation }) => {
 
 
                     <View style={styles.interactiveContainer}>
-                      <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(item._id)} >
+                      <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(item._id,item.userId)} >
                         <Icon style={styles.icon} name={iconName} color={'#000'} size={15} />
                         <Text style={styles.textButton}>Lưu</Text>
                       </TouchableOpacity>
@@ -359,6 +370,7 @@ const HomeScreen = ({ navigation }) => {
                         isDisabled
                       />
                     </View>
+
 
 
                   </TouchableOpacity>

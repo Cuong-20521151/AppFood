@@ -1,14 +1,15 @@
 import React,{useState, useEffect} from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity,Image,Modal } from 'react-native';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity,Image,Modal,ActivityIndicator } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { AirbnbRating } from 'react-native-ratings';
 import SaveBV from '../screens/SaveBV';
 import LikeBV from '../screens/LikeBV';
 import Icon from 'react-native-vector-icons/Ionicons'
 import UserDetails from '../screens/ProfileDetails';
 import { useAuth } from '../screens/AuthContext';
 import Profile from '../screens/Profile';
-
+import axios from 'axios';
 const TopTab = createMaterialTopTabNavigator();
 
 
@@ -16,10 +17,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   const {userId, setIsAuthenticated} = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [User, setUser] = useState([]);
-  const handleMenuToggle = () => {
-    setIsMenuVisible(!isMenuVisible);
-  };
-
+  const [isLoading, setLoadding] = useState(true);
+  
   const handleLogout = () => {
     setIsAuthenticated(false);
   };
@@ -38,11 +37,18 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       }
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+    } finally {
+      setLoadding(false); // Đặt isLoading về false sau khi dữ liệu đã được tải hoặc xảy ra lỗi
     }
   };
   useEffect(()=>{
     getUser();
   },[userId]);
+  
+  const handleMenuToggle = () => {
+    setIsMenuVisible(!isMenuVisible);
+  };
+
   const UserDetails = (selectedUser) => {
     navigation.navigate('Cập nhật thông tin', { Users: selectedUser});
 };
@@ -51,7 +57,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       <View style={styles.Head}>
       
         <View style={styles.HeadUser}>
-          {Array.isArray(User) && User.length > 0 ? (
+          {isLoading ? (<ActivityIndicator />) : (
             User.map((userData) => (
               <View key={userData._id} style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image source={
@@ -63,9 +69,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 <Text>{userData.username}</Text>
               </View>
             ))
-          ) : (
-            <Text>Loading...</Text>
-          )}
+          ) 
+          }
         </View>
         <View style={styles.HeadIcon}>
           <TouchableOpacity onPress={()=>navigation.navigate("Cài đặt")}>
@@ -80,7 +85,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       {isMenuVisible && (
         <View style={styles.menu}>
           {
-            Array.isArray(User) ? (
+            isLoading ? (<ActivityIndicator />) : (
               User.map((item) => (
                 <TouchableOpacity
                   key={item._id}
@@ -91,9 +96,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   <Text style={styles.menuItem} >Thông tin người dùng</Text>
                 </TouchableOpacity>
               ))
-            ) : (
-              <Text style={styles.menuItem} >Thông tin người dùng</Text>
-            )
+            ) 
           
           }
           <TouchableOpacity onPress={handleLogout}>

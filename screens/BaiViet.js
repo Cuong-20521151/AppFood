@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, TextInput, View, ImageBackground, Image, Button, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, FlatList, Alert } from 'react-native';
+import { Text, TextInput, View, ImageBackground, Image, Button, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet, FlatList, Alert,RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
@@ -21,6 +21,7 @@ const BaiViet = ({ navigation, route }) => {
   const [foodProcessing, setFoodProcessing] = useState(initialfoodProcessing)
   const [foodIngredients, setFoodIngredients] = useState(initialfoodIngredients)
   const [cookingTime, setCookingTime] = useState(initialcookingTime)
+  const [UserId, setUserId] = useState(initialuserId)
   const [feel, setFeel] = useState(initialfeel)
   const [foodRations, setFoodRations] = useState(initialfoodRations)
   const [dsuser, getuser] = useState([]);
@@ -33,12 +34,13 @@ const BaiViet = ({ navigation, route }) => {
   const [dataChanged, setDataChanged] = useState(true);
   const [userImage, setUserImage] = useState('');
   const [userImageNow, setUserImageNow] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   const { userId, isAuthenticated, refreshData, setRefreshData } = useAuth();
 
   const _submitCmt = () => {
     if (isAuthenticated) {
       // UserId đã được xác thực, thực hiện gửi comment
-      fetch("http://192.168.54.46:3000/api/postCmt", {
+      fetch("http://192.168.133.46:3000/api/postCmt", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -65,7 +67,9 @@ const BaiViet = ({ navigation, route }) => {
   const _submitRating = (rating) => {
     if (isAuthenticated && rating !== undefined) {
       // UserId đã được xác thực, thực hiện gửi comment
-      fetch("http://192.168.54.46:3000/api/postRating", {
+
+      fetch("http://192.168.133.46:3000/api/postRating", {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -92,12 +96,14 @@ const BaiViet = ({ navigation, route }) => {
   const getdscomment = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.54.46:3000/api/getAllCmt');
+        'http://192.168.133.46:3000/api/getAllCmt');
       const filteredComments = response.data.filter(comment => comment.food_id === route.params.id);
       getdscmt(filteredComments);
     } catch (error) {
       // handle err
       // alert(error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -132,11 +138,13 @@ const BaiViet = ({ navigation, route }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.54.46:3000/api/getUser');
+        'http://192.168.133.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
       // alert(error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
   useEffect(() => {
@@ -146,16 +154,25 @@ const BaiViet = ({ navigation, route }) => {
   const getdsrating = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.54.46:3000/api/getAllRating');
+        'http://192.168.133.46:3000/api/getAllRating');
       getrating(response.data);
     } catch (error) {
       // handle err
       // alert(error.message);
+    } finally {
+      setRefreshing(false);
     }
   };
   useEffect(() => {
     getdsrating();
   }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    getdsrating();
+    getdsuser();
+    getdscomment();
+  }
 
   useEffect(() => {
     // Bước 1: Lọc Ratings Theo food_id
@@ -190,7 +207,7 @@ const BaiViet = ({ navigation, route }) => {
 
   useEffect(() => {
     const user = dsuser.find(item => item._id === userId);
-    setUserImage(user ? user.userImage : '');
+    setUserImageNow(user ? user.userImage : '');
   }, [dsuser, userId]);
 
 
@@ -234,7 +251,8 @@ const BaiViet = ({ navigation, route }) => {
 
   const updateAveRating = async (newAverageRating) => {
     try {
-      const response = await fetch(`http://192.168.54.46:3000/api/updateAveRating/` + route.params.id, {
+
+      const response = await fetch(`http://192.168.133.46:3000/api/updateAveRating/` + route.params.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -255,20 +273,27 @@ const BaiViet = ({ navigation, route }) => {
     }
   };
 
-  const handleSaveDish = async () => {
+  const handleSaveDish = async (postId, postUserId) => {
     if (isAuthenticated) {
-      try {
-        const response = await axios.post('http://192.168.54.46:3000/api/postSaveDish', {
-          food_id: route.params.id,
-          userId: userId,
-        });
-        console.log('Trạng thái lưu:', response.data);
-        // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
-        // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
-        setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
-      } catch (error) {
-        console.error('Lỗi khi lưu bài viết:', error.message);
-        // Xử lý thông báo lỗi nếu cần
+      // Kiểm tra nếu userId của người đăng nhập khác với userId của bài viết
+      if (userId !== postUserId) {
+        try {
+          const response = await axios.post('http://192.168.133.46:3000/api/postSaveDish', {
+            food_id: postId,
+            userId: userId,
+          });
+          console.log('Trạng thái lưu:', response.data);
+          // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
+          // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+          setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
+        } catch (error) {
+          console.error('Lỗi khi lưu bài viết:', error.message);
+        }
+      } else {
+        // Người dùng đang cố gắng lưu bài viết của chính họ
+        console.log('Không thể lưu bài viết của chính bạn');
+        Alert.alert('Không thể lưu bài viết của chính bạn');
+        // Hiển thị thông báo hoặc thực hiện hành động phù hợp
       }
     } else {
       // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
@@ -276,9 +301,18 @@ const BaiViet = ({ navigation, route }) => {
       // Hiển thị thông báo yêu cầu đăng nhập nếu cần
     }
   };
-
+  const handleUserPress = (UserId) => {
+    navigation.navigate('UserInfo', { UserId: UserId }); // Chuyển hướng đến màn hình UserInfo và truyền userId
+  };
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
+    >
       <View style={styles.content}>
         <Text style={styles.textH3}>{foodName}</Text>
         <Image source={{ uri: foodPhoto }} style={styles.imageFood} />
@@ -291,12 +325,14 @@ const BaiViet = ({ navigation, route }) => {
                 ) : (
                   <Image style={styles.image} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkxAEiAK9CBh_Cxi6E5_k_atIuwrHYTRHLNA&usqp=CAU' }} />
                 )}
-                <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
+                <TouchableOpacity onPress={() => handleUserPress(UserId)}>
+                  <Text style={styles.text}>{userName && userName.lastname} {userName && userName.firstname}</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(food_id)}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(food_id,UserId)}>
           <Text style={styles.textButton}> <Icon style={styles.iconButton} name={"bookmark-outline"} color={'#000'} size={15} /> Lưu</Text>
         </TouchableOpacity>
         <View style={styles.horizontalLine}></View>
@@ -312,11 +348,7 @@ const BaiViet = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.horizontalLine}></View>
-        <View>
-          <View>
-            <Text style={styles.textH3}>Thông tin người dùng</Text>
-          </View>
-        </View>
+
         <View style={styles.horizontalLine}></View>
         <View>
           <View style={styles.headCooksnap}>
@@ -409,9 +441,7 @@ const BaiViet = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.horizontalLine}></View>
-        <View>
-          <Text style={styles.textH3}>Món mới của Meo</Text>
-        </View>
+
       </View>
     </ScrollView>
   );
