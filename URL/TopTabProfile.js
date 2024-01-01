@@ -1,14 +1,15 @@
 import React,{useState, useEffect} from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity,Image,Modal } from 'react-native';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity,Image,Modal,ActivityIndicator } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { AirbnbRating } from 'react-native-ratings';
 import SaveBV from '../screens/SaveBV';
 import LikeBV from '../screens/LikeBV';
 import Icon from 'react-native-vector-icons/Ionicons'
 import UserDetails from '../screens/ProfileDetails';
 import { useAuth } from '../screens/AuthContext';
 import Profile from '../screens/Profile';
-
+import axios from 'axios';
 const TopTab = createMaterialTopTabNavigator();
 
 
@@ -16,34 +17,37 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   const {userId, setIsAuthenticated} = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [User, setUser] = useState([]);
-  console.log(userId)
-  const handleMenuToggle = () => {
-    setIsMenuVisible(!isMenuVisible);
-  };
-
+  const [isLoading, setLoadding] = useState(true);
+  
   const handleLogout = () => {
     setIsAuthenticated(false);
   };
   const getUser = async () => {
     try {
-      const res = await fetch('http://192.168.88.128:3000/api/getUser');
-      const json = await res.json();
-  
-      // Kiểm tra và gán dữ liệu người dùng vào User nếu nó là một mảng
-      if (Array.isArray(json)) {
-        const extractedProducts = json.find(item => item._id === userId);
-        console.log(extractedProducts);
-        setUser([extractedProducts]); // Gán dữ liệu vào User
-      } else {
-        console.error('Lỗi: Dữ liệu không phải là một mảng');
-      }
+      setLoadding(true); // Đặt isLoading về true khi bắt đầu tải dữ liệu
+
+      // Giả định thời gian tải là 2 giây trước khi lấy được dữ liệu
+      setTimeout(async () => {
+        const res = await axios.get(`http://192.168.133.46:3000/api/getUser/${userId}`);
+        
+        setUser(res.data);
+        console.log(res.data);
+      }, 2000); // Thời gian đợi là 2 giây (2000 milliseconds)
+
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+    } finally {
+      setLoadding(false); // Đặt isLoading về false sau khi dữ liệu đã được tải hoặc xảy ra lỗi
     }
   };
   useEffect(()=>{
     getUser();
   },[userId]);
+  
+  const handleMenuToggle = () => {
+    setIsMenuVisible(!isMenuVisible);
+  };
+
   const UserDetails = (selectedUser) => {
     navigation.navigate('Cập nhật thông tin', { Users: selectedUser});
 };
@@ -51,8 +55,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     <View style={styles.tabBar}>
       <View style={styles.Head}>
       
-        {/* <View style={styles.HeadUser}>
-          {Array.isArray(User) && User.length > 0 ? (
+        <View style={styles.HeadUser}>
+          {isLoading ? (<ActivityIndicator />) : (
             User.map((userData) => (
               <View key={userData._id} style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image source={
@@ -64,10 +68,9 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 <Text>{userData.username}</Text>
               </View>
             ))
-          ) : (
-            <Text>Loading...</Text>
-          )}
-        </View> */}
+          ) 
+          }
+        </View>
         <View style={styles.HeadIcon}>
           <TouchableOpacity onPress={()=>navigation.navigate("Cài đặt")}>
             <Icon name={"settings"} size={25} color={"#000"}/>
@@ -81,7 +84,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       {isMenuVisible && (
         <View style={styles.menu}>
           {
-            Array.isArray(User) ? (
+            isLoading ? (<ActivityIndicator />) : (
               User.map((item) => (
                 <TouchableOpacity
                   key={item._id}
@@ -92,9 +95,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   <Text style={styles.menuItem} >Thông tin người dùng</Text>
                 </TouchableOpacity>
               ))
-            ) : (
-              <Text style={styles.menuItem} >Thông tin người dùng</Text>
-            )
+            ) 
           
           }
           <TouchableOpacity onPress={handleLogout}>

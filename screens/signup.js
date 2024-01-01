@@ -20,19 +20,20 @@ const Signup = ({ navigation }) => {
 
   const handleSignUp = async () => {
     try {
-      if (!firstName || !username || !email || !password || !confPassword) {
-        Alert.alert("Please fill in all fields.");
+      if (!firstName || !username || !password || !confPassword) {
+        Alert.alert("Vui lòng điền đầy đủ thông tin.");
         return;
       }
   
       if (password !== confPassword) {
-        Alert.alert("Passwords do not match.");
+        Alert.alert("Mật khẩu không trùng khớp.");
         return;
       }
 
+
       // Additional password strength checks can be added here
 
-      const response = await fetch("http://192.168.88.128:3000/api/Signup", {
+      const response = await fetch("http://192.168.133.46:3000/api/Signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,12 +42,11 @@ const Signup = ({ navigation }) => {
           firstname: firstName,
           lastname: lastName,
           username: username,
-          email: email, // Include email field in the request body
           password: password,
         }),
       });
   
-      const responseData = await response.json();
+      
   
       if (response.ok) {
         Alert.alert("Chúc mừng! Bạn đã đăng ký thành công.");
@@ -70,11 +70,11 @@ const Signup = ({ navigation }) => {
         <Image
           source={{
             uri:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU",
+              "https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg",
           }}
           style={styles.logo}
         />
-        <Text style={styles.appName}>Create New Account</Text>
+        <Text style={styles.appName}>Tạo Tài Khoản Mới</Text>
       </View>
       <View style={styles.content}>
         <CustomTextInput
@@ -89,12 +89,7 @@ const Signup = ({ navigation }) => {
           value={lastName}
           onChangeText={(text) => setLastName(text)}
         />
-        <CustomTextInput
-          name="mail"
-          placeholder="Enter Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
+        
         <CustomTextInput
           name="user"
           placeholder="Username"

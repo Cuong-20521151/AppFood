@@ -80,7 +80,7 @@ const Storages = ({ navigation }) => {
         try {
           if (userId) {
 
-            const response = await axios.get(`http://192.168.88.128:3000/api/getUserDish/${userId}`);
+            const response = await axios.get(`http://192.168.133.46:3000/api/getUserDish/${userId}`);
 
             getdstd(response.data);
           }
@@ -146,7 +146,7 @@ const Storages = ({ navigation }) => {
 
     const handleDelete = async (id) => {
 
-        const data = await axios.delete(`http://192.168.88.128:3000/api/delete/${id}`);
+        const data = await axios.delete(`http://192.168.133.46:3000/api/delete/${id}`);
 
         if (data.data.success) {
             getdstd(data.data.message);

@@ -14,7 +14,7 @@ const UserInfo = ({ navigation,route }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const userResponse = await axios.get(`http://192.168.88.128:3000/api/user-info/${UserId}`);
+                const userResponse = await axios.get(`http://192.168.133.46:3000/api/user-info/${UserId}`);
                 const { user, userPostsCount } = userResponse.data;
                 setUserInfo(user);
                 setUserPostsCount(userPostsCount);
@@ -32,7 +32,7 @@ const UserInfo = ({ navigation,route }) => {
     useEffect(() => {
         const fetchPostsByUserId = async () => {
             try {
-                const response = await axios.get(`http://192.168.88.128:3000/api/postAllDish/${UserId}`);
+                const response = await axios.get(`http://192.168.133.46:3000/api/postAllDish/${UserId}`);
                 setAllDish(response.data); // Thiết lập dữ liệu allDish từ phản hồi
                 setLoading(false);
             } catch (error) {
@@ -53,7 +53,7 @@ const UserInfo = ({ navigation,route }) => {
 
       try {
 
-        const userResponse = await axios.get(`http://192.168.88.128:3000/api/user-info/`+userId);
+        const userResponse = await axios.get(`http://192.168.133.46:3000/api/user-info/`+userId);
         const { user, userPostsCount } = userResponse.data;
         setUserInfo(user);
         setUserPostsCount(userPostsCount);
