@@ -13,7 +13,7 @@ const SaveBV = ({ navigation }) => {
         const fetchSavedPosts = async () => {
             try {
 
-                const response = await axios.get(`http://192.168.100.6:3000/api/saved-posts/` + userId);
+                const response = await axios.get(`http://192.168.88.128:3000/api/saved-posts/` + userId);
 
                 setSavedPosts(response.data.savedPosts);
                 console.log(response.data);
@@ -28,7 +28,7 @@ const SaveBV = ({ navigation }) => {
     const fetchPostsByFoodId = async (foodId) => {
         try {
 
-            const response = await axios.get(`http://192.168.100.6:3000/api/getAllDish/` + foodId);
+            const response = await axios.get(`http://192.168.88.128:3000/api/getAllDish/` + foodId);
 
             return response.data;
         } catch (error) {

@@ -30,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       const response = await axios.get(
 
-        'http://192.168.100.6:3000/api/getAllDish');
+        'http://192.168.88.128:3000/api/getAllDish');
 
       getdstd(response.data);
     } catch (error) {
@@ -69,7 +69,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       const response = await axios.get(
 
-        'http://192.168.100.6:3000/api/getUser');
+        'http://192.168.88.128:3000/api/getUser');
 
       getuser(response.data);
     } catch (error) {
@@ -102,7 +102,7 @@ const HomeScreen = ({ navigation }) => {
     const fetchMealTypeDish = async () => {
       if (selectedItemIndex !== -1) {
 
-        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+        const response = await fetch('http://192.168.88.128:3000/api/getAllDish');
 
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[selectedItemIndex]);
@@ -110,7 +110,7 @@ const HomeScreen = ({ navigation }) => {
       } else {
         // Nếu không có mục nào được chọn, hiển thị dữ liệu mặc định (defaultSelectedItemIndex)
 
-        const response = await fetch('http://192.168.100.6:3000/api/getAllDish');
+        const response = await fetch('http://192.168.88.128:3000/api/getAllDish');
 
         const json = await response.json();
         const foundUser = json.filter(food => food.mealType === uniqueMealTypes[defaultSelectedItemIndex]);
@@ -133,7 +133,7 @@ const HomeScreen = ({ navigation }) => {
   const handleSaveDish = async (postId) => {
     if (isAuthenticated) {
       try {
-        const response = await axios.post('http://192.168.54.46:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
           food_id: postId,
           userId: userId,
         });

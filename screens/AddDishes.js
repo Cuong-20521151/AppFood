@@ -8,6 +8,8 @@ import MyDropDownPicker from '../components/dropdown'
 import axios from 'axios';
 const upload = 'cloud-upload';
 const checkmark = 'checkmark';
+const images_sharp = 'images-sharp';
+const camera_outline = 'camera-outline';
 
 const AddDishes = ({ navigation }) => {
   const [foodName, setFoodName] = useState("")
@@ -27,6 +29,7 @@ const AddDishes = ({ navigation }) => {
   const [currentValue2, setCurrentValue2] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentValue, setCurrentValue] = useState([]);
+  const [showImageOptions, setShowImageOptions] = useState(false);
   const {userId} = useAuth()
 
   const items1 = [
@@ -54,7 +57,7 @@ const AddDishes = ({ navigation }) => {
 
   const _submitData = () => {
 
-    fetch("http://192.168.100.6:3000/api/postDish", {
+    fetch("http://192.168.88.128:3000/api/postDish", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -70,7 +73,7 @@ const AddDishes = ({ navigation }) => {
         mealType: currentValue1,
         foodProcessingType: currentValue,
         userId:userId,
-        aveRating:0
+        aveRating:0,
       })
     }).then(res => res.json())
       .then(data => {
@@ -143,7 +146,7 @@ const AddDishes = ({ navigation }) => {
 
 
   const handleDelete = async (id) => {
-    const data = await axios.delete('http://192.168.100.6:3000/api/delete/' + id)
+    const data = await axios.delete('http://192.168.88.128:3000/api/delete/' + id)
 
     if (data.data.success) {
       getapiloaihoa()
@@ -154,6 +157,17 @@ const AddDishes = ({ navigation }) => {
     // Thiết lập độ cao của TextInput dựa trên chiều cao nội dung mới
     setInputHeight(contentHeight);
   };
+
+  // ... (your existing functions)
+
+  const _openImageOptions = () => {
+    setShowImageOptions(true);
+  };
+
+  const _closeImageOptions = () => {
+    setShowImageOptions(false);
+  };
+
   return (
     <ScrollView style={styles.container}
       nestedScrollEnabled={true}
@@ -169,15 +183,39 @@ const AddDishes = ({ navigation }) => {
         </View>
       </View>
       <View style={styles.introduce}>
-        <TouchableOpacity style={styles.upload_image} mode="contained"
-          onPress={() => _uploadImage()}>
+        <TouchableOpacity style={styles.upload_image} mode="contained" onPress={_openImageOptions}>
           <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
-          <Text>Chọn ảnh</Text>
+          <Text style={styles.text_upload}>Thêm ảnh</Text>
           {foodPhoto !== "" && (
-            <Image source={{ uri: foodPhoto }} style={styles.image} />
-          )}
+              <Image source={{ uri: foodPhoto }} style={styles.image} />
+            )}
         </TouchableOpacity>
-
+        {showImageOptions && (
+          <View style={styles.upload_cl}>
+            <TouchableOpacity
+              style={styles.upload_cl1}
+              mode="contained"
+              onPress={() => {
+                _uploadImage();
+                _closeImageOptions();
+              }}
+            >
+              <Icon name={images_sharp} size={25}></Icon>
+              <Text style={styles.text_upload_cl1}>Thư viện</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.upload_cl1}
+              mode="contained"
+              onPress={() => {
+                _takePhoto();
+                _closeImageOptions();
+              }}
+            >
+              <Icon name={camera_outline} size={25}></Icon>
+              <Text style={styles.text_upload_cl1}>Máy ảnh</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <TextInput placeholder='Tên món ăn' style={styles.input_name} onChangeText={text => setFoodName(text)} />
         <TextInput placeholder='Cảm nghĩ về món ăn!Tại sao lại muốn ăn món ăn này?...'
           style={[styles.input_Ingredient, { height: Math.max(80, inputHeight) }]}
@@ -290,8 +328,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    height: 100,
-    width: 100,
+    height: 200,
+    width: 340,
+    borderRadius:20,
+  },
+  text_upload:{
+    fontSize:20,
+    paddingBottom:4,
+    paddingTop:4,
+    paddingLeft:6,
+    paddingRight:6,
+    marginBottom:10,
+    borderRadius:6,
+    backgroundColor:'#A2CD5A'
+  },
+  upload_cl:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    marginLeft:70,
+    marginRight:70,
+    marginTop:20,
+    marginBottom:20,
+  },
+  upload_cl1:{
+    flexDirection:'row',
+    backgroundColor:'#A2CD5A',
+    paddingLeft:8,
+    paddingTop:3,
+    paddingRight:8,
+    paddingBottom:3,
+    borderRadius:6,
+  },
+  text_upload_cl1:{
+    paddingLeft:5,
+    paddingTop:4,
+    fontSize:16,
   },
   input_name: {
     backgroundColor: '#A2CD5A',
