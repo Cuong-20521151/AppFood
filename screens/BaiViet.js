@@ -41,7 +41,7 @@ const BaiViet = ({ navigation, route }) => {
     if (isAuthenticated) {
       // UserId đã được xác thực, thực hiện gửi comment
 
-      fetch("http://192.168.88.128:3000/api/postCmt", {
+      fetch("http://192.168.133.46:3000/api/postCmt", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ const BaiViet = ({ navigation, route }) => {
     if (isAuthenticated && rating !== undefined) {
       // UserId đã được xác thực, thực hiện gửi comment
 
-      fetch("http://192.168.88.128:3000/api/postRating", {
+      fetch("http://192.168.133.46:3000/api/postRating", {
 
         method: 'POST',
         headers: {
@@ -97,7 +97,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdscomment = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.88.128:3000/api/getAllCmt');
+        'http://192.168.133.46:3000/api/getAllCmt');
       const filteredComments = response.data.filter(comment => comment.food_id === route.params.id);
       getdscmt(filteredComments);
     } catch (error) {
@@ -139,7 +139,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdsuser = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.88.128:3000/api/getUser');
+        'http://192.168.133.46:3000/api/getUser');
       getuser(response.data);
     } catch (error) {
       // handle err
@@ -155,7 +155,7 @@ const BaiViet = ({ navigation, route }) => {
   const getdsrating = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.88.128:3000/api/getAllRating');
+        'http://192.168.133.46:3000/api/getAllRating');
       getrating(response.data);
     } catch (error) {
       // handle err
@@ -253,7 +253,7 @@ const BaiViet = ({ navigation, route }) => {
   const updateAveRating = async (newAverageRating) => {
     try {
 
-      const response = await fetch(`http://192.168.88.128:3000/api/updateAveRating/` + route.params.id, {
+      const response = await fetch(`http://192.168.133.46:3000/api/updateAveRating/` + route.params.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -274,22 +274,27 @@ const BaiViet = ({ navigation, route }) => {
     }
   };
 
-  const handleSaveDish = async () => {
+  const handleSaveDish = async (postId, postUserId) => {
     if (isAuthenticated) {
-      try {
-
-        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
-
-          food_id: route.params.id,
-          userId: userId,
-        });
-        console.log('Trạng thái lưu:', response.data);
-        // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
-        // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
-        setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
-      } catch (error) {
-        console.error('Lỗi khi lưu bài viết:', error.message);
-        // Xử lý thông báo lỗi nếu cần
+      // Kiểm tra nếu userId của người đăng nhập khác với userId của bài viết
+      if (userId !== postUserId) {
+        try {
+          const response = await axios.post('http://192.168.133.46:3000/api/postSaveDish', {
+            food_id: postId,
+            userId: userId,
+          });
+          console.log('Trạng thái lưu:', response.data);
+          // Cập nhật trạng thái giao diện sau khi lưu thành công hoặc xóa thành công
+          // Ví dụ: Hiển thị thông báo, cập nhật state, v.v.
+          setRefreshData(!refreshData); // Khi lưu thành công, kích hoạt việc tải lại dữ liệu
+        } catch (error) {
+          console.error('Lỗi khi lưu bài viết:', error.message);
+        }
+      } else {
+        // Người dùng đang cố gắng lưu bài viết của chính họ
+        console.log('Không thể lưu bài viết của chính bạn');
+        Alert.alert('Không thể lưu bài viết của chính bạn');
+        // Hiển thị thông báo hoặc thực hiện hành động phù hợp
       }
     } else {
       // Người dùng chưa đăng nhập, điều hướng đến màn hình đăng nhập
@@ -328,7 +333,7 @@ const BaiViet = ({ navigation, route }) => {
             </View>
           </View>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(food_id)}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSaveDish(food_id,UserId)}>
           <Text style={styles.textButton}> <Icon style={styles.iconButton} name={"bookmark-outline"} color={'#000'} size={15} /> Lưu</Text>
         </TouchableOpacity>
         <View style={styles.horizontalLine}></View>
