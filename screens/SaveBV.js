@@ -22,7 +22,7 @@ const SaveBV = ({ navigation }) => {
     useEffect(() => {
         const fetchSavedPosts = async () => {
             try {
-                const response = await axios.get(`http://192.168.133.46:3000/api/saved-posts/` + userId);
+                const response = await axios.get(`http://192.168.155.46:3000/api/saved-posts/` + userId);
                 setSavedPosts(response.data.savedPosts);
                 console.log(response.data);
             } catch (error) {
@@ -35,7 +35,7 @@ const SaveBV = ({ navigation }) => {
 
     const fetchPostsByFoodId = async (foodId) => {
         try {
-            const response = await axios.get(`http://192.168.133.46:3000/api/getAllDish/${foodId}`);
+            const response = await axios.get(`http://192.168.155.46:3000/api/getAllDish/${foodId}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching posts by food_id:', error);
