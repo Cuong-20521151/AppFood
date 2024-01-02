@@ -24,17 +24,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   };
   const getUser = async () => {
     try {
-      const res = await fetch('http://192.168.155.46:3000/api/getUser');
-      const json = await res.json();
-  
-      // Kiểm tra và gán dữ liệu người dùng vào User nếu nó là một mảng
-      if (Array.isArray(json)) {
-        const extractedProducts = json.find(item => item._id === userId);
-        console.log(extractedProducts);
-        setUser([extractedProducts]); // Gán dữ liệu vào User
-      } else {
-        console.error('Lỗi: Dữ liệu không phải là một mảng');
-      }
+      const res = await axios.get(`http://192.168.155.46:3000/api/getUser/${userId}`);
+      
+      console.log(res.data);
+      setUser(res.data); 
+      
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);
     } finally {
