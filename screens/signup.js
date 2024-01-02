@@ -33,7 +33,7 @@ const Signup = ({ navigation }) => {
 
       // Additional password strength checks can be added here
 
-      const response = await fetch("http://192.168.155.46:3000/api/Signup", {
+      const response = await fetch("http://192.168.88.128:3000/api/Signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
