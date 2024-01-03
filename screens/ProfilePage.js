@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, StyleSheet,Image,TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, StyleSheet,Image,TouchableOpacity, Alert } from 'react-native';
 import FlatSL from '../components/FlastSL'; // Chỉnh sửa đường dẫn đến component FlatSL
 import axios from 'axios';
 import { useAuth } from './AuthContext';
@@ -14,7 +14,7 @@ const UserInfo = ({ navigation,route }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const userResponse = await axios.get(`http://192.168.155.46:3000/api/user-info/${UserId}`);
+                const userResponse = await axios.get(`http://192.168.183.46:3000/api/user-info/${UserId}`);
                 const { user, userPostsCount } = userResponse.data;
                 setUserInfo(user);
                 setUserPostsCount(userPostsCount);
@@ -32,7 +32,7 @@ const UserInfo = ({ navigation,route }) => {
     useEffect(() => {
         const fetchPostsByUserId = async () => {
             try {
-                const response = await axios.get(`http://192.168.155.46:3000/api/postAllDish/${UserId}`);
+                const response = await axios.get(`http://192.168.183.46:3000/api/postAllDish/${UserId}`);
                 setAllDish(response.data); // Thiết lập dữ liệu allDish từ phản hồi
                 setLoading(false);
             } catch (error) {
@@ -45,24 +45,33 @@ const UserInfo = ({ navigation,route }) => {
     }, [UserId]);
 
     const handleFlow = async () => {
-      if (!isAuthenticated) {
-          // Nếu chưa đăng nhập, điều hướng người dùng đến trang đăng nhập
-          navigation.navigate('Login');
-          return;
-      }
-
-      try {
-
-        const userResponse = await axios.get(`http://192.168.155.46:3000/api/user-info/`+userId);
-        const { user, userPostsCount } = userResponse.data;
-        setUserInfo(user);
-        setUserPostsCount(userPostsCount);
-        setLoading(false);
-
-      } catch (error) {
-          console.error('Error flowing:', error);
-      }
-  };
+        if (!isAuthenticated) {
+            // If not authenticated, navigate the user to the login page
+            navigation.navigate('Login');
+            return;
+        }
+    
+        // Check if the current authenticated user and the profile being viewed are the same
+        if (userId === UserId) {
+            // If they are the same, display a message or prevent the follow action
+            console.log('Cannot follow yourself.');
+            Alert.alert('Bạn không thể tự theo dõi bản thân');
+            return;
+        }
+    
+        try {
+            const response = await axios.post(
+                'http://192.168.183.46:3000/api/flows',
+                { user_flow: UserId, userId: userId }
+            );
+    
+            // Handle the response as needed, maybe update state or show a message
+            console.log('Flow response:', response.data);
+        } catch (error) {
+            console.error('Error flowing:', error);
+            // Handle error scenarios, show an error message, etc.
+        }
+    };
     
     if (loading) {
         return (
