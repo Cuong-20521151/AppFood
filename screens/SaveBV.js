@@ -11,7 +11,7 @@ const SaveBV = ({ navigation }) => {
   useEffect(() => {
     const fetchSavedPosts = async () => {
       try {
-        const response = await axios.get(`http://192.168.183.46:3000/api/saved-posts/${userId}`);
+        const response = await axios.get(`http://192.168.88.128:3000/api/saved-posts/${userId}`);
         setSavedPosts(response.data.savedPosts);
       } catch (error) {
         if (error.response.status === 404) {
@@ -32,7 +32,7 @@ const SaveBV = ({ navigation }) => {
       try {
         const temp = [];
         for (const post of savedPosts) {
-          const response = await axios.get(`http://192.168.183.46:3000/api/getAllDish/${post.food_id}`);
+          const response = await axios.get(`http://192.168.88.128:3000/api/getAllDish/${post.food_id}`);
           temp.push(...response.data);
         }
         setDish(temp);

@@ -24,7 +24,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   };
   const getUser = async () => {
     try {
-      const res = await axios.get(`http://192.168.183.46:3000/api/getUser/${userId}`);
+      const res = await axios.get(`http://192.168.88.128:3000/api/getUser/${userId}`);
       
       console.log(res.data);
       setUser(res.data); 
