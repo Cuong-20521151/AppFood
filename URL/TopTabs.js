@@ -71,7 +71,7 @@ const TopTabs = () => {
 
 const styles = StyleSheet.create({
   topTab:{
-    paddingTop:50,
+    marginTop:50,
     
   },
   tabBar: {
