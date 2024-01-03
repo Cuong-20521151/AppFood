@@ -101,7 +101,7 @@ const Search = ({ navigation }) => {
             <Image source={{ uri: item.foodPhoto }} style={styles.postImageNew}>
             </Image>
             <View style={styles.postHeadNew}>
-              <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNjuAlP67tv7QzTpcc--fy9UnBSM3JszDFCw&usqp=CAU' }} style={styles.projectImage}></Image>
+              <Image source={{ uri: item.user.userImage }} style={styles.projectImage}></Image>
               <Text style={styles.textNew}>{item.user && item.user.name
                 ? `${item.user.name.lastname} ${item.user.name.firstname}`
                 : 'Unknown User'}</Text>
