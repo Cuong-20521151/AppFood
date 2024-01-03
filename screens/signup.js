@@ -33,7 +33,7 @@ const Signup = ({ navigation }) => {
 
       // Additional password strength checks can be added here
 
-      const response = await fetch("http://192.168.183.46:3000/api/Signup", {
+      const response = await fetch("http://192.168.88.128:3000/api/Signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,46 +79,46 @@ const Signup = ({ navigation }) => {
       <View style={styles.content}>
         <CustomTextInput
           name="user"
-          placeholder="Enter Firstname"
+          placeholder="Nhập tên đầu tiên"
           value={firstName}
           onChangeText={(text) => setFirstName(text)}
         />
         <CustomTextInput
           name="user"
-          placeholder="Enter Lastname"
+          placeholder="Nhập họ"
           value={lastName}
           onChangeText={(text) => setLastName(text)}
         />
         
         <CustomTextInput
           name="user"
-          placeholder="Username"
+          placeholder="Tài khoản"
           value={username}
           onChangeText={(text) => setUsername(text)}
         />
         <CustomTextInput
           name="lock"
-          placeholder="Password"
+          placeholder="Mật khẩu"
           value={password}
           onChangeText={(text) => setPassword(text)}
           secureTextEntry={true}
         />
         <CustomTextInput
           name="lock"
-          placeholder="Confirm Password"
+          placeholder="Xác nhận lại mật khẩu"
           value={confPassword}
           onChangeText={(text) => setConfPassword(text)}
           secureTextEntry={true}
         />
 
         <TouchableOpacity style={styles.button_login} onPress={handleSignUp}>
-          <Text style={styles.text_login}>CREATE</Text>
+          <Text style={styles.text_login}>Tạo tài khoản</Text>
         </TouchableOpacity>
 
         <View style={styles.sigup}>
-          <Text style={styles.text_sigup}>Already have an account?</Text>
+          <Text style={styles.text_sigup}>Bạn đã có tài khoản</Text>
           <TouchableOpacity onPress={handleLogin}>
-            <Text style={styles.text_sigup_account}>Login now!</Text>
+            <Text style={styles.text_sigup_account}>Đăng ký ngay!</Text>
           </TouchableOpacity>
         </View>
       </View>

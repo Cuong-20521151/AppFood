@@ -17,7 +17,7 @@ const Login = ({navigation}) => {
   
   const handleLogin = async () => {
     
-    fetch('http://192.168.183.46:3000/api/getUser')
+    fetch('http://192.168.88.128:3000/api/getUser')
       .then((res) => res.json())
       .then((json) => {
         const foundUser = json.find(user => user.username === username && user.password === password);
@@ -55,19 +55,19 @@ const Login = ({navigation}) => {
       <View style={styles.appContainer}>
       <Image source={{uri:'https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg'}}
       style={styles.logo}/>
-      <Text style={styles.appName}>Welcome</Text>
+      <Text style={styles.appName}>AppFood</Text>
       </View>
       
       <View style={styles.content}>
         <CustomTextInput
           name = 'user'
-          placeholder="username"
+          placeholder="Tài khoản"
           value={username}
           onChangeText={(value) => setCredentials(value, password)}
         />
         <CustomTextInput
           name = 'lock'
-          placeholder="Password"
+          placeholder="Mật khẩu"
           value={password}
           onChangeText={(value) => setCredentials(username,value)}
           secureTextEntry={true}
@@ -78,16 +78,16 @@ const Login = ({navigation}) => {
           style={styles.forgotPassword}
           onPress={handleForgotPassword}
         >
-          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+          <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
         </TouchableOpacity>
           <TouchableOpacity
           style={styles.button_login}
           onPress={handleLogin}
         >
-          <Text style={styles.text_login}>LOG IN</Text>
+          <Text style={styles.text_login}>ĐĂNG NHẬP</Text>
         </TouchableOpacity>
         <View style={styles.title_sigup}>
-        <Text style={styles.text_title_sigup}>Or login with</Text>
+        <Text style={styles.text_title_sigup}>Đăng nhập với</Text>
         </View>
         <View style={styles.mxh}>
           <Image source={{uri:'https://anh.eva.vn/upload/4-2016/images/2016-11-30/1480494815-facebook-sao-viet.png'}}
@@ -96,9 +96,9 @@ const Login = ({navigation}) => {
           style={styles.Image_mxh}/>
         </View>
         <View style={styles.sigup}>
-          <Text style={styles.text_sigup}>Don't have an account?</Text>
+          <Text style={styles.text_sigup}>Bạn chưa có tài khoản?</Text>
           <TouchableOpacity onPress={handleSignUp}>
-            <Text style={styles.text_sigup_account}>Sign Up Here</Text>
+            <Text style={styles.text_sigup_account}>Đăng ký tại đây</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -184,7 +184,8 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 60,
-    marginRight:15,
+    marginLeft:15,
+    marginRight:10,
   },
   sigup:{
     flexDirection:'row',

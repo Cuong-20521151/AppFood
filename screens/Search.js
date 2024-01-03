@@ -19,7 +19,7 @@ const Search = ({ navigation }) => {
   const getapithucdon = async () => {
     try {
 
-      const response = await axios.get('http://192.168.183.46:3000/api/getAllDish');
+      const response = await axios.get('http://192.168.88.128:3000/api/getAllDish');
 
       getdstd(response.data);
     } catch (error) {
@@ -34,7 +34,7 @@ const Search = ({ navigation }) => {
     try {
       const response = await axios.get(
 
-        'http://192.168.183.46:3000/api/getUser');
+        'http://192.168.88.128:3000/api/getUser');
 
       getuser(response.data);
     } catch (error) {
@@ -64,7 +64,7 @@ const Search = ({ navigation }) => {
     if (isAuthenticated) {
       try {
 
-        const response = await axios.post('http://192.168.183.46:3000/api/postSaveDish', {
+        const response = await axios.post('http://192.168.88.128:3000/api/postSaveDish', {
 
           food_id: postId,
           userId: userId,
@@ -94,14 +94,22 @@ const Search = ({ navigation }) => {
         <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
           {
             id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
-            Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
+            Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
+            UserId: item.userId
           })}>
 
           <View style={styles.headerPostNew}>
             <Image source={{ uri: item.foodPhoto }} style={styles.postImageNew}>
             </Image>
             <View style={styles.postHeadNew}>
-              <Image source={{ uri: item.user.userImage }} style={styles.projectImage}></Image>
+              <Image
+                source={{
+                  uri: item.user && item.user.userImage
+                    ? item.user.userImage
+                    : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU'
+                }}
+                style={styles.projectImage}
+              />
               <Text style={styles.textNew}>{item.user && item.user.name
                 ? `${item.user.name.lastname} ${item.user.name.firstname}`
                 : 'Unknown User'}</Text>
@@ -158,7 +166,7 @@ const Search = ({ navigation }) => {
         style={styles.myFood}
         scrollEnabled={false}
         data={combinedData}
-        renderItem={({ item})  => filterData(item)}
+        renderItem={({ item }) => filterData(item)}
         keyExtractor={(item) => item._id}
         numColumns={2}
       />
@@ -178,7 +186,7 @@ const Search = ({ navigation }) => {
                     <Text style={styles.textListThem}>{item.foodName}</Text>
                   </ImageBackground>
 
-                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate}/>
+                  <FlatSL row={"3"} data={dsthucdon} columns={"3"} toggleExerciseSelection={handleNavigate} />
                 </TouchableOpacity >
               )}
               keyExtractor={(item, index) => index.toString()}
@@ -279,7 +287,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     marginBottom: 5,
     marginRight: 15,
-    marginTop:10,
+    marginTop: 10,
   },
   headerPostNew: {
     width: 250,
@@ -310,7 +318,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 6,
     paddingTop: 5,
-    marginRight:24,
+    marginRight: 24,
   },
   projectImage: {
     width: 30,
