@@ -105,7 +105,8 @@ const SearchMeal = ({ navigation, route }) => {
         <TouchableOpacity style={styles.postNew} onPress={() => navigation.navigate('Bài Viết',
           {
             id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
-            Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
+            Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
+            UserId: item.userId
           })}>
 
           <View style={styles.headerPostNew}>
@@ -151,12 +152,12 @@ const SearchMeal = ({ navigation, route }) => {
         />
       </View>
       <FlatList
-         style={styles.myFood}
-         scrollEnabled={false}
-         data={combinedData}
-         renderItem={({ item})  => filterData(item)}
-         keyExtractor={(item) => item._id}
-         numColumns={2}
+        style={styles.myFood}
+        scrollEnabled={false}
+        data={combinedData}
+        renderItem={({ item }) => filterData(item)}
+        keyExtractor={(item) => item._id}
+        numColumns={2}
       />
       <View style={styles.content}>
         <View>
@@ -168,19 +169,27 @@ const SearchMeal = ({ navigation, route }) => {
               scrollEnabled={false}
               data={filteredData}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index })  => (
+              renderItem={({ item, index }) => (
 
                 <TouchableOpacity style={styles.postNew} key={`item_${index}`} onPress={() => navigation.navigate('Bài Viết',
                   {
                     id: item._id, name: item.foodName, Photo: item.foodPhoto, Processing: item.foodProcessing,
-                    Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations
+                    Ingredients: item.foodIngredients, Time: item.cookingTime, Feel: item.feel, FoodRations: item.foodRations,
+                    UserId: item.userId
                   })}>
 
                   <View style={styles.headerPostNew}>
                     <Image source={{ uri: item.foodPhoto }} style={styles.postImageNew}>
                     </Image>
                     <View style={styles.postHeadNew}>
-                      <Image source={{ uri: item.user.userImage }} style={styles.projectImage}></Image>
+                      <Image
+                        source={{
+                          uri: item.user && item.user.userImage
+                            ? item.user.userImage
+                            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYFYUMxwjoJUgk-Bv9mwUGhi6uhAIKOfWZHw&usqp=CAU'
+                        }}
+                        style={styles.projectImage}
+                      />
                       <Text style={styles.textNew}>{item.user && item.user.name
                         ? `${item.user.name.lastname} ${item.user.name.firstname}`
                         : 'Unknown User'}</Text>
