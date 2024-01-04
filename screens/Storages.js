@@ -18,7 +18,7 @@ const postdata = [
         name: 'Vui Tiệc Tại Gia',
         times: '6 thg 11 - 4 thg 12',
         number_of_dishes: '16 món lên sóng',
-        nameFood1: 'tom hum aaa aaa aaaa aaaa',
+        nameFood1: 'Demo',
         nameFood2: 'tom hum',
         nameFood3: 'tom hum',
 
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingRight: 7,
         fontWeight: 'bold',
-        width: 112,
+        width: 111,
     },
     flatList: {
         height: 475,

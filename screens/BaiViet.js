@@ -337,6 +337,11 @@ const BaiViet = ({ navigation, route }) => {
         </TouchableOpacity>
         <View style={styles.horizontalLine}></View>
         <View>
+          <Text style={styles.textH3}>Tại sao nên nấu món này:</Text>
+          <Text style={styles.textH5NL}>{feel}</Text>
+        </View>
+        <View style={styles.horizontalLine}></View>
+        <View>
           <Text style={styles.textH3}>Nguyên Liệu</Text>
           <Text style={styles.textH5NL}>{foodIngredients}</Text>
         </View>

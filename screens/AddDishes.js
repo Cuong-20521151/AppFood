@@ -21,7 +21,6 @@ const AddDishes = ({ navigation }) => {
   const [feel, setFeel] = useState("")
   const [foodRations, setFoodRations] = useState("")
   const [mealType, setMealType] = useState("")
-  const [inputHeight, setInputHeight] = useState(80); // Độ cao mặc định của TextInput
   const [modal, setModal] = useState(false)
   const [isOpen1, setIsOpen1] = useState(false);
   const [currentValue1, setCurrentValue1] = useState([]);
@@ -31,6 +30,9 @@ const AddDishes = ({ navigation }) => {
   const [currentValue, setCurrentValue] = useState([]);
   const [showImageOptions, setShowImageOptions] = useState(false);
   const {userId} = useAuth()
+  const [inputHeight, setInputHeight] = useState(80);
+  const [inputHeight1, setInputHeight1] = useState(80);
+  const [inputHeight2, setInputHeight2] = useState(80);
 
   const items1 = [
     { label: 'Bữa Sáng', value: 'Bữa Sáng' },
@@ -152,6 +154,14 @@ const AddDishes = ({ navigation }) => {
       alert(data.data.message)
     }
   }
+  const handleContentSizeChange1 = (contentWidth, contentHeight) => {
+    // Thiết lập độ cao của TextInput dựa trên chiều cao nội dung mới
+    setInputHeight1(contentHeight);
+  };
+  const handleContentSizeChange2 = (contentWidth, contentHeight) => {
+    // Thiết lập độ cao của TextInput dựa trên chiều cao nội dung mới
+    setInputHeight2(contentHeight);
+  };
   const handleContentSizeChange = (contentWidth, contentHeight) => {
     // Thiết lập độ cao của TextInput dựa trên chiều cao nội dung mới
     setInputHeight(contentHeight);
@@ -217,11 +227,11 @@ const AddDishes = ({ navigation }) => {
         )}
         <TextInput placeholder='Tên món ăn' style={styles.input_name} onChangeText={text => setFoodName(text)} />
         <TextInput placeholder='Cảm nghĩ về món ăn!Tại sao lại muốn ăn món ăn này?...'
-          style={[styles.input_Ingredient, { height: Math.max(80, inputHeight) }]}
+          style={[styles.input_Ingredient, { height: Math.max(80, inputHeight1) }]}
           multiline
           numberOfLines={1}
           onContentSizeChange={(e) =>
-            handleContentSizeChange(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
+            handleContentSizeChange1(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
           }
           onChangeText={text => setFeel(text)}
         />
@@ -262,11 +272,11 @@ const AddDishes = ({ navigation }) => {
       <View style={styles.introduce}>
         <Text style={styles.Ingredient}>Nguyên liệu</Text>
         <View style={styles.Ingredient_items}>
-          <TextInput placeholder='250g bột' style={[styles.input_Ingredient, { height: Math.max(80, inputHeight) }]}
+          <TextInput placeholder='250g bột' style={[styles.input_Ingredient, { height: Math.max(80, inputHeight2) }]}
             multiline
             numberOfLines={1}
             onContentSizeChange={(e) =>
-              handleContentSizeChange(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
+              handleContentSizeChange2(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
             }
             onChangeText={text => setFoodIngredients(text)}
           />
