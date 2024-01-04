@@ -24,7 +24,6 @@ const UpdateDishes = ({ navigation,route }) => {
     const [feel, setFeel] = useState(initialfeel)
     const [foodRations, setFoodRations] = useState(initialfoodRations)
     const [mealType, setMealType] = useState(initialmealType)
-    const [inputHeight, setInputHeight] = useState(80); // Độ cao mặc định của TextInput
     const [modal, setModal] = useState(false)
     const [isOpen1, setIsOpen1] = useState(false);
     const [currentValue1, setCurrentValue1] = useState([]);
@@ -33,6 +32,9 @@ const UpdateDishes = ({ navigation,route }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentValue, setCurrentValue] = useState([]);
     const [showImageOptions, setShowImageOptions] = useState(false);
+    const [inputHeight, setInputHeight] = useState(0);
+    const [inputHeight1, setInputHeight1] = useState(0);
+    const [inputHeight2, setInputHeight2] = useState(0);
 
     const items1 = [
       { label: 'Sáng', value: 'Sáng' },
@@ -141,8 +143,13 @@ const updateData = async () => {
   }
 
   const handleContentSizeChange = (contentWidth, contentHeight) => {
-    // Thiết lập độ cao của TextInput dựa trên chiều cao nội dung mới
     setInputHeight(contentHeight);
+  };
+  const handleContentSizeChange1 = (contentWidth, contentHeight) => {
+    setInputHeight1(contentHeight);
+  };
+  const handleContentSizeChange2 = (contentWidth, contentHeight) => {
+    setInputHeight2(contentHeight);
   };
 
   const _openImageOptions = () => {
@@ -165,14 +172,6 @@ const updateData = async () => {
         </View>
       </View>
       <View style={styles.introduce}>
-        {/* <TouchableOpacity style={styles.upload_image} mode="contained"
-          onPress={() => _uploadImage()}>
-          <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
-          <Text>Chọn ảnh</Text>
-          {foodPhoto !== "" && (
-          <Image source={{ uri: foodPhoto }} style={styles.image} />
-          )}
-        </TouchableOpacity> */}
         <TouchableOpacity style={styles.upload_image} mode="contained" onPress={_openImageOptions}>
           <Icon name={foodPhoto == "" ? upload : checkmark} size={50}></Icon>
           <Text style={styles.text_upload}>Đổi ảnh</Text>
@@ -211,11 +210,12 @@ const updateData = async () => {
           {foodName}
         </TextInput>
         <TextInput placeholder='Cảm nghĩ về món ăn!Tại sao lại muốn ăn món ăn này?...'
-          style={[styles.input_Ingredient, { height: Math.max(80, inputHeight) }]}
+          style={[styles.input_Ingredient, {height: Math.max(80, inputHeight1) }]}
           multiline
           numberOfLines={1}
+          maxLength={200}
           onContentSizeChange={(e) =>
-            handleContentSizeChange(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
+            handleContentSizeChange1(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
           }
           onChangeText={text => setFeel(text)}
         >{feel}</TextInput>
@@ -256,11 +256,11 @@ const updateData = async () => {
       <View style={styles.introduce}>
         <Text style={styles.Ingredient}>Nguyên liệu</Text>
         <View style={styles.Ingredient_items}>
-          <TextInput placeholder='250g bột' style={[styles.input_Ingredient, { height: Math.max(80, inputHeight) }]}
+          <TextInput placeholder='250g bột' style={[styles.input_Ingredient, { height: Math.max(80, inputHeight2) }]}
             multiline
             numberOfLines={1}
             onContentSizeChange={(e) =>
-              handleContentSizeChange(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
+              handleContentSizeChange2(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)
             }
             onChangeText={text => setFoodIngredients(text)}
           >{foodIngredients}</TextInput>
