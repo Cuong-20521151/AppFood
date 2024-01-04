@@ -212,7 +212,7 @@ const SearchMeal = ({ navigation, route }) => {
                   </View>
                 </TouchableOpacity>
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => index.toString()}
 
               numColumns={2}
             />
