@@ -7,54 +7,69 @@ import FlatSL from '../components/FlastSL';
 const SaveBV = ({ navigation }) => {
   const { userId, savedPosts, setSavedPosts } = useAuth();
   const [Dish, setDish] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
+  const fetchSavedPosts = async () => {
+    try {
+      const response = await axios.get(`http://192.168.88.128:3000/api/saved-posts/${userId}`);
+      setSavedPosts(response.data.savedPosts);
+    } catch (error) {
+      if (error.response.status === 404) {
+          
+        // Hiển thị thông báo cho người dùng rằng đường dẫn không tồn tại
+    } else {
+        console.error('Lỗi không xác định:', error);
+        // Xử lý các trường hợp lỗi khác nếu cần thiết
+    }
+    }finally {
+      setRefreshing(false);
+    }
+  };
   useEffect(() => {
-    const fetchSavedPosts = async () => {
-      try {
-        const response = await axios.get(`http://192.168.88.128:3000/api/saved-posts/${userId}`);
-        setSavedPosts(response.data.savedPosts);
-      } catch (error) {
-        if (error.response.status === 404) {
-            
-          // Hiển thị thông báo cho người dùng rằng đường dẫn không tồn tại
-      } else {
-          console.error('Lỗi không xác định:', error);
-          // Xử lý các trường hợp lỗi khác nếu cần thiết
-      }
-      }
-    };
-
     fetchSavedPosts();
   }, [userId]);
 
+  const fetchDishData = async () => {
+    try {
+      const temp = [];
+      for (const post of savedPosts) {
+        const response = await axios.get(`http://192.168.88.128:3000/api/getAllDish/${post.food_id}`);
+        temp.push(...response.data);
+      }
+      setDish(temp);
+    } catch (error) {
+      if (error.response.status === 404) {
+          
+        // Hiển thị thông báo cho người dùng rằng đường dẫn không tồn tại
+    } else {
+        console.error('Lỗi không xác định:', error);
+        // Xử lý các trường hợp lỗi khác nếu cần thiết
+    }
+    }finally {
+      setRefreshing(false);
+    }
+  };
   useEffect(() => {
-    const fetchDishData = async () => {
-      try {
-        const temp = [];
-        for (const post of savedPosts) {
-          const response = await axios.get(`http://192.168.88.128:3000/api/getAllDish/${post.food_id}`);
-          temp.push(...response.data);
-        }
-        setDish(temp);
-      } catch (error) {
-        if (error.response.status === 404) {
-            
-          // Hiển thị thông báo cho người dùng rằng đường dẫn không tồn tại
-      } else {
-          console.error('Lỗi không xác định:', error);
-          // Xử lý các trường hợp lỗi khác nếu cần thiết
-      }
-      }
-    };
-
     fetchDishData();
   }, [savedPosts]);
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchSavedPosts();
+    fetchDishData();
+  }
 
   return (
       <View style={styles.container}>
-          <Text style={styles.title}>Saved Posts</Text>
+          <Text style={styles.title}>Bài viết đã lưu</Text>
           {/* Hiển thị danh sách bài viết */}
-          <ScrollView>
+          <ScrollView
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+          >
               {
                   Dish.map((Post, index) => (
                       <TouchableOpacity style={styles.post} key={`post_${index}`} onPress={() => navigation.navigate('Bài Viết', {
