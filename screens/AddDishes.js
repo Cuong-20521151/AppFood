@@ -58,6 +58,10 @@ const AddDishes = ({ navigation }) => {
   ]
 
   const _submitData = () => {
+    if (!foodName || !foodPhoto || !foodProcessing || !foodIngredients || !cookingTime || !feel || !currentValue1 || !currentValue2 || !currentValue) {
+      Alert.alert("Cảnh báo", "Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
     fetch("http://192.168.88.128:3000/api/postDish", {
       method: 'POST',
       headers: {
