@@ -66,6 +66,10 @@ const UpdateDishes = ({ navigation,route }) => {
     }, []);
   
 const updateData = async () => {
+  if (!foodName || !foodPhoto || !foodProcessing || !foodIngredients || !cookingTime || !feel || !currentValue1 || !currentValue2 || !currentValue) {
+    Alert.alert("Cảnh báo", "Vui lòng nhập đầy đủ thông tin.");
+    return;
+  }
   try {
 
     const response = await fetch(`http://192.168.88.128:3000/api/update/`+route.params.id, {
