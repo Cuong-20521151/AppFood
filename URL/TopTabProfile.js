@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity,Image,Modal,ActivityIndicator } from 'react-native';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity,Image,Modal,ActivityIndicator,RefreshControl } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AirbnbRating } from 'react-native-ratings';
@@ -26,18 +26,22 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     try {
       const res = await axios.get(`http://192.168.88.128:3000/api/getUser/${userId}`);
       
-      console.log(res.data);
+      // console.log(res.data);
       setUser(res.data); 
       
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);
     } finally {
-      setLoadding(false); // Đặt isLoading về false sau khi dữ liệu đã được tải hoặc xảy ra lỗi
+      setLoadding(false); 
     }
   };
-  useEffect(()=>{
-    getUser();
-  },[userId]);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      getUser();
+    }, 1000);
+
+    return () => clearInterval(intervalId); // Cleanup the interval on component unmount
+  }, [userId]);
   
   const handleMenuToggle = () => {
     setIsMenuVisible(!isMenuVisible);
@@ -47,7 +51,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     navigation.navigate('Cập nhật thông tin', { Users: selectedUser});
 };
   return (
-    <View style={styles.tabBar}>
+    <View style={styles.tabBar}
+    >
       <View style={styles.Head}>
       
         <View style={styles.HeadUser}>
