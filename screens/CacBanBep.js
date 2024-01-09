@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { RefreshControl } from "react-native";
 import {
   StyleSheet,
   View,
@@ -16,66 +17,72 @@ const CacBanBep = ({ navigation }) => {
   const [Dish, setDish] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
   const [userList, setUserList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchUserFlows = async () => {
-      try {
-        if (isAuthenticated) {
-          const userFlowResponse = await axios.get(`http://192.168.88.128:3000/api/getFlows/${userId}`);
-          setUserInfo(userFlowResponse.data.user);
-          console.log('Flow:', userFlowResponse.data);
-        }
-      } catch (error) {
-        if (error.response.status === 404) {
-          // Handle 404 error
-        } else {
-          console.error('Undefined error:', error);
-          // Handle other errors if needed
-        }
+  const fetchUserFlows = async () => {
+    try {
+      if (isAuthenticated) {
+        const userFlowResponse = await axios.get(`http://192.168.88.128:3000/api/getFlows/${userId}`);
+        setUserInfo(userFlowResponse.data.user);
+        console.log('Flow:', userFlowResponse.data);
       }
-    };
-
+    } catch (error) {
+      if (error.response.status === 404) {
+        // Handle 404 error
+      } else {
+        console.error('Undefined error:', error);
+        // Handle other errors if needed
+      }
+    }finally {
+      setRefreshing(false);
+    }
+  };
+  useEffect(() => {
     fetchUserFlows();
   }, [userId, isAuthenticated]);
 
+  const fetchUserPosts = async () => {
+    try {
+      const temp = [];
+      const promises = userInfo.map(async (user) => {
+        const userPostsResponse = await axios.get(`http://192.168.88.128:3000/api/postAllDish/${user.user_flow}`);
+        const sortedPosts = userPostsResponse.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        if (sortedPosts.length > 0) {
+          temp.push(sortedPosts[0]);
+        }
+      });
+      await Promise.all(promises);
+      setDish(temp);
+    } catch (error) {
+      console.error('Undefined error:', error);
+    }
+    finally {
+      setRefreshing(false);
+    }
+  };
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const temp = [];
-        const promises = userInfo.map(async (user) => {
-          const userPostsResponse = await axios.get(`http://192.168.88.128:3000/api/postAllDish/${user.user_flow}`);
-          const sortedPosts = userPostsResponse.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-          if (sortedPosts.length > 0) {
-            temp.push(sortedPosts[0]);
-          }
-        });
-        await Promise.all(promises);
-        setDish(temp);
-      } catch (error) {
-        console.error('Undefined error:', error);
-      }
-    };
-
     if (userInfo.length > 0) {
       fetchUserPosts();
     }
   }, [userInfo]);
 
+  const fetchUserList = async () => {
+    try {
+      const temp = [];
+      const promises = userInfo.map(async (user) => {
+        const userResponse = await axios.get(`http://192.168.88.128:3000/api/getUser/${user.user_flow}`);
+        temp.push(...userResponse.data);
+      });
+      await Promise.all(promises);
+      setUserList(temp);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+    finally {
+      setRefreshing(false);
+    }
+  };
   useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const temp = [];
-        const promises = userInfo.map(async (user) => {
-          const userResponse = await axios.get(`http://192.168.88.128:3000/api/getUser/${user.user_flow}`);
-          temp.push(...userResponse.data);
-        });
-        await Promise.all(promises);
-        setUserList(temp);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
     if (userInfo.length > 0) {
       fetchUserList();
     }
@@ -98,9 +105,24 @@ const CacBanBep = ({ navigation }) => {
   const handleHome = () => {
     navigation.navigate('Kho Cảm Hứng');
   };
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchUserFlows();
+    fetchUserPosts();
+    fetchUserList();
+  }
+
+
 
   return (
-    <ScrollView style={styles.main}>
+    <ScrollView style={styles.main}
+    refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+      />
+    }
+    >
       {isAuthenticated ? (
         Dish.length > 0 ? (
           <>
